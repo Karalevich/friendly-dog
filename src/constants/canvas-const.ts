@@ -5,11 +5,12 @@ export const PLAYER_IMAGE_HEIGHT = 5230
 export const PLAYER_IMAGE_COLUMNS = 12
 export const PLAYER_IMAGE_ROWS = 10
 export const STAGGER_FRAMES = 5
+export const START_GAME_SPEED = 2
 
 const canvas = document.getElementById('canvas1') as HTMLCanvasElement
 export const context = canvas?.getContext('2d') as CanvasRenderingContext2D
-export const CANVAS_WIDTH = canvas.width = 600
-export const CANVAS_HEIGHT = canvas.height = 600
+export const CANVAS_WIDTH = canvas.width = 800
+export const CANVAS_HEIGHT = canvas.height = 700
 
 export const SPRITE_WIDTH = 575
 export const SPRITE_HEIGHT = PLAYER_IMAGE_HEIGHT / PLAYER_IMAGE_ROWS
