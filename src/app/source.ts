@@ -3,12 +3,14 @@ import {
   CANVAS_WIDTH,
   context,
   SPRITE_HEIGHT,
-  SPRITE_WIDTH, STAGGER_FRAMES, START_GAME_SPEED
+  SPRITE_WIDTH,
+  STAGGER_FRAMES,
+  START_GAME_SPEED,
 } from '../constants/canvas-const'
-import { PLAYER_IMG } from '../constants/img-bcg'
-import playerSpriteAnimation from './utils/ player-animations'
-import { bcgAnimations } from './utils/bcg-animations'
-import { enemy1Animations } from './utils/enemy-animations'
+import { PLAYER_IMG } from '../constants/bcg-const'
+import playerSpriteAnimation from './utils/player-utils'
+import { bcgAnimations } from './utils/bcg-utils'
+import { angryBatEnemies, batEnemies } from './utils/enemy-utils'
 
 let gameFrame = 0
 let playerState = 'idle'
@@ -26,7 +28,11 @@ window.addEventListener('load', () => {
     //   bcg.draw(context)
     // })
 
-    enemy1Animations.forEach(enemy => {
+    // batEnemies.forEach((enemy) => {
+    //   enemy.update(gameFrame)
+    //   enemy.draw(context)
+    // })
+    angryBatEnemies.forEach((enemy) => {
       enemy.update(gameFrame)
       enemy.draw(context)
     })
@@ -36,5 +42,3 @@ window.addEventListener('load', () => {
   }
   animate()
 })
-
-

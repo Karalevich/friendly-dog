@@ -1,7 +1,7 @@
 {
   "singleQuote": true,
   "arrowParens": "always",
-  "max-len": ["error", 180, 2],
+  "printWidth": 120,
   "tabWidth": 2,
   "useTabs": false,
   "semi": false

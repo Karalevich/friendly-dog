@@ -1,12 +1,12 @@
 export type CanvasType = HTMLCanvasElement | null
 
 export type StateType = {
-  name: string,
+  name: string
   frames: number
 }
 
 export type AnimationNameType = {
-  loc: Array<{ x: number, y: number }>
+  loc: Array<{ x: number; y: number }>
 }
 
 export type AnimationType = {

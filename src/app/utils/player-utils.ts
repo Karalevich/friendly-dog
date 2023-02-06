@@ -4,7 +4,7 @@ import { PLAYER_STATES, SPRITE_HEIGHT, SPRITE_WIDTH } from '../../constants/canv
 const playerSpriteAnimation: AnimationType = {}
 PLAYER_STATES.forEach((state, index) => {
   let frames: AnimationNameType = {
-    loc: []
+    loc: [],
   }
   for (let i = 0; i < state.frames; i++) {
     let positionX = i * SPRITE_WIDTH
