@@ -20,3 +20,11 @@ export const ENEMY1_SPRITE_HEIGHT = 155
 export const COUNT_ENEMY2_FRAMES = 5
 export const ENEMY2_SPRITE_WIDTH = 266
 export const ENEMY2_SPRITE_HEIGHT = 188
+
+export const COUNT_ENEMY3_FRAMES = 5
+export const ENEMY3_SPRITE_WIDTH = 218
+export const ENEMY3_SPRITE_HEIGHT = 177
+
+export const COUNT_ENEMY4_FRAMES = 8
+export const ENEMY4_SPRITE_WIDTH = 213
+export const ENEMY4_SPRITE_HEIGHT = 213
