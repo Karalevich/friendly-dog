@@ -62,7 +62,7 @@ class Enemy {
     this.movementStrategy = movement
   }
 
-  update(gameFrame: number) {
+  update(gameFrame: number, ctx: CanvasRenderingContext2D) {
     const arg = {
       x: this.x,
       y: this.y,
@@ -76,6 +76,7 @@ class Enemy {
     if (gameFrame % this.framesChangingFrequency === 0) {
       this.currentFrame < this.countImageFrames ? this.currentFrame++ : (this.currentFrame = 0)
     }
+    this.draw(ctx)
   }
 
   draw(ctx: CanvasRenderingContext2D) {

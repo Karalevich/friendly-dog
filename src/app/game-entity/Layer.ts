@@ -19,15 +19,16 @@ export default class Layer {
     this.speed = gameSpeed * this.speedModifier
   }
 
-  update(gameSpeed: number) {
+  update(gameSpeed: number, ctx: CanvasRenderingContext2D) {
     this.speed = gameSpeed * this.speedModifier
     if (this.x <= -this.width) {
       this.x = 0
     }
     this.x = Math.floor(this.x - this.speed)
+    this.draw(ctx)
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  private draw(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
     ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height)
   }

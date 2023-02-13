@@ -1,0 +1,4 @@
+export const COUNT_EXPLOSION_FRAMES = 5
+export const EXPLOSION_SPRITE_WIDTH = 200
+export const EXPLOSION_SPRITE_HEIGHT = 179
+export const EXPLOSION_SIZE_RATIO = 0.5
