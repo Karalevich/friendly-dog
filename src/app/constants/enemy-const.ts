@@ -1,7 +1,7 @@
-import enemy1 from '../img/enemy1.png'
-import enemy2 from '../img/enemy2.png'
-import enemy3 from '../img/enemy3.png'
-import enemy4 from '../img/enemy4.png'
+import enemy1 from '../../img/enemy1.png'
+import enemy2 from '../../img/enemy2.png'
+import enemy3 from '../../img/enemy3.png'
+import enemy4 from '../../img/enemy4.png'
 
 export const SIZE_RATIO = 2.5
 export const ENEMY_IMG1 = new Image()
@@ -28,3 +28,5 @@ export const ENEMY3_SPRITE_HEIGHT = 177
 export const COUNT_ENEMY4_FRAMES = 8
 export const ENEMY4_SPRITE_WIDTH = 213
 export const ENEMY4_SPRITE_HEIGHT = 213
+
+export const NEW_ENEMY_APPEAR_INTERVAL = 500

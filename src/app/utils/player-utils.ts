@@ -1,5 +1,5 @@
-import { AnimationNameType, AnimationType } from '../../types/types'
-import { PLAYER_STATES, SPRITE_HEIGHT, SPRITE_WIDTH } from '../../constants/canvas-const'
+import { AnimationNameType, AnimationType } from '../types/types'
+import { PLAYER_STATES, SPRITE_HEIGHT, SPRITE_WIDTH } from '../constants/canvas-const'
 
 const playerSpriteAnimation: AnimationType = {}
 PLAYER_STATES.forEach((state, index) => {

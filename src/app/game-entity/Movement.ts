@@ -1,4 +1,4 @@
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../../constants/canvas-const'
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants/canvas-const'
 
 export type MoveArgumentsType = {
   x: number

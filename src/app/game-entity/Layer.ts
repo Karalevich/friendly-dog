@@ -1,4 +1,4 @@
-import { CANVAS_HEIGHT } from '../../constants/canvas-const'
+import { CANVAS_HEIGHT } from '../constants/canvas-const'
 
 export default class Layer {
   private x: number

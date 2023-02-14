@@ -1,6 +1,6 @@
 import Layer from '../game-entity/Layer'
-import { BCG_LAYER1, BCG_LAYER2, BCG_LAYER3, BCG_LAYER4, BCG_LAYER5 } from '../../constants/bcg-const'
-import { START_GAME_SPEED } from '../../constants/canvas-const'
+import { BCG_LAYER1, BCG_LAYER2, BCG_LAYER3, BCG_LAYER4, BCG_LAYER5 } from '../constants/bcg-const'
+import { START_GAME_SPEED } from '../constants/canvas-const'
 
 const layer1 = new Layer(BCG_LAYER1, 0.2, START_GAME_SPEED)
 const layer2 = new Layer(BCG_LAYER2, 0.4, START_GAME_SPEED)

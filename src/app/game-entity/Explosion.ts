@@ -1,6 +1,6 @@
 import boom from '../../img/boom.png'
 import explosion from '../../audio/explosion.wav'
-import { EXPLOSION_SIZE_RATIO, EXPLOSION_SPRITE_HEIGHT, EXPLOSION_SPRITE_WIDTH } from '../../constants/explosion-const'
+import { EXPLOSION_SIZE_RATIO, EXPLOSION_SPRITE_HEIGHT, EXPLOSION_SPRITE_WIDTH } from '../constants/explosion-const'
 
 export default class Explosion {
   private readonly x: number

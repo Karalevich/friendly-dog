@@ -1,4 +1,4 @@
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../../constants/canvas-const'
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants/canvas-const'
 import {
   COUNT_ENEMY1_FRAMES,
   COUNT_ENEMY2_FRAMES,
@@ -17,7 +17,7 @@ import {
   ENEMY_IMG3,
   ENEMY_IMG4,
   SIZE_RATIO,
-} from '../../constants/enemy-const'
+} from '../constants/enemy-const'
 import {
   ShakeTypeMovement,
   MovementInterface,
