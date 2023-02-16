@@ -11,10 +11,10 @@ import {
 import { PLAYER_IMG } from './constants/bcg-const'
 import playerSpriteAnimation from './utils/player-utils'
 import { bcgAnimations } from './utils/bcg-utils'
-
 import Explosion from './game-entity/Explosion'
-import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, Enemy, GhostEnemy } from './game-entity/Enemy'
+import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, GhostEnemy } from './game-entity/Enemy'
 import { NEW_ENEMY_APPEAR_INTERVAL } from './constants/enemy-const'
+import { GameEntity } from './game-entity/GameEntity'
 
 let gameFrame: number = 0
 let timeToNextEnemy = 0
@@ -22,11 +22,7 @@ let timeToNextEnemy = 0
 let lastTime = 0
 let playerState = 'idle'
 const canvasPosition = canvas.getBoundingClientRect()
-const explosions: Array<Explosion> = []
-const batEnemies: Array<BatEnemy> = []
-const angryBatEnemies: Array<AngryBatEnemy> = []
-const ghostEnemies: Array<GhostEnemy> = []
-const buzzSawEnemies: Array<BuzzSawEnemy> = []
+let gameObjects: Array<GameEntity> = []
 
 window.addEventListener('load', () => {
   const animate = (timestamp: number): void => {
@@ -35,10 +31,10 @@ window.addEventListener('load', () => {
     lastTime = timestamp
     timeToNextEnemy += deltaTime
     if (timeToNextEnemy > NEW_ENEMY_APPEAR_INTERVAL) {
-      buzzSawEnemies.push(new BuzzSawEnemy())
-      batEnemies.push(new BatEnemy())
-      angryBatEnemies.push(new AngryBatEnemy())
-      ghostEnemies.push(new GhostEnemy())
+      gameObjects.push(new BuzzSawEnemy())
+      gameObjects.push(new BatEnemy())
+      gameObjects.push(new AngryBatEnemy())
+      gameObjects.push(new GhostEnemy())
 
       timeToNextEnemy = 0
     }
@@ -51,16 +47,8 @@ window.addEventListener('load', () => {
       bcg.update(START_GAME_SPEED, context)
     })
 
-    const gameObjects: Array<Enemy | Explosion> = [
-      ...explosions,
-      ...buzzSawEnemies,
-      ...batEnemies,
-      ...angryBatEnemies,
-      ...ghostEnemies,
-    ]
-    gameObjects.forEach((obj) => obj.update(deltaTime, gameFrame, context))
-    gameObjects.filter((obj) => !obj.isReadyDelete)
-
+    gameObjects.forEach((obj) => obj.update(deltaTime, context, gameFrame))
+    gameObjects = gameObjects.filter((obj) => !obj.isReadyDelete)
     gameFrame++
     requestAnimationFrame(animate)
   }
@@ -69,6 +57,6 @@ window.addEventListener('load', () => {
   window.addEventListener('click', (e) => {
     let positionX = e.x - canvasPosition.left
     let positionY = e.y - canvasPosition.top
-    explosions.push(new Explosion(positionX, positionY))
+    gameObjects.push(new Explosion(positionX, positionY))
   })
 })

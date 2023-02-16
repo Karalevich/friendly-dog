@@ -26,22 +26,12 @@ import {
   RandomJumpMovement,
 } from './Movement'
 import { countEnemySize } from '../utils/enemy-utils'
+import { GameEntity } from './GameEntity'
 
-export class Enemy {
+export class Enemy extends GameEntity {
+  private readonly movementStrategy: MovementInterface
   private x: number
   private y: number
-  private readonly width: number
-  private readonly height: number
-  private readonly spriteWidth: number
-  private readonly spriteHeight: number
-  private currentFrame: number
-  private readonly countImageFrames: number
-  private timeSinceLastChangeFrame: number
-  private readonly framesChangingFrequency: number
-  private readonly sizeRatio: number
-  isReadyDelete: boolean
-  private readonly img: HTMLImageElement
-  private readonly movementStrategy: MovementInterface
 
   constructor(
     movement: MovementInterface,
@@ -50,23 +40,13 @@ export class Enemy {
     spriteWidth: number,
     spriteHeight: number
   ) {
-    this.img = image
-    this.countImageFrames = countImageFrames
-    this.spriteWidth = spriteWidth
-    this.spriteHeight = spriteHeight
-    this.sizeRatio = SIZE_RATIO
-    this.currentFrame = 0
-    this.framesChangingFrequency = 16
-    this.timeSinceLastChangeFrame = 0
-    this.width = countEnemySize(this.spriteWidth, this.sizeRatio)
-    this.height = countEnemySize(this.spriteHeight, this.sizeRatio)
+    super(image, countImageFrames, spriteWidth, spriteHeight, SIZE_RATIO)
     this.x = CANVAS_WIDTH + this.width
     this.y = Math.round(Math.random() * (CANVAS_HEIGHT - this.height))
-    this.isReadyDelete = false
     this.movementStrategy = movement
   }
 
-  update(deltaTime: number, gameFrame: number, ctx: CanvasRenderingContext2D) {
+  update(deltaTime: number, ctx: CanvasRenderingContext2D, gameFrame: number) {
     const arg = {
       x: this.x,
       y: this.y,
@@ -77,11 +57,8 @@ export class Enemy {
     const { x, y } = this.movementStrategy.move(arg)
     this.x = x
     this.y = y
-    this.timeSinceLastChangeFrame += deltaTime
-    if (this.timeSinceLastChangeFrame > this.framesChangingFrequency) {
-      this.currentFrame < this.countImageFrames ? this.currentFrame++ : (this.currentFrame = 0)
-      this.timeSinceLastChangeFrame = 0
-    }
+    this.frequencyCount(deltaTime)
+
     if (this.x + this.width < 0) {
       this.isReadyDelete = true
     }
@@ -89,17 +66,7 @@ export class Enemy {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.drawImage(
-      this.img,
-      this.currentFrame * this.spriteWidth,
-      0,
-      this.spriteWidth,
-      this.spriteHeight,
-      this.x,
-      this.y,
-      this.width,
-      this.height
-    )
+    this.drawImg(ctx, this.x, this.y)
   }
 }
 

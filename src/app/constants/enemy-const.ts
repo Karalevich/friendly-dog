@@ -3,7 +3,7 @@ import enemy2 from '../../img/enemy2.png'
 import enemy3 from '../../img/enemy3.png'
 import enemy4 from '../../img/enemy4.png'
 
-export const SIZE_RATIO = 2.5
+export const SIZE_RATIO = 0.4
 export const ENEMY_IMG1 = new Image()
 ENEMY_IMG1.src = enemy1
 export const ENEMY_IMG2 = new Image()
