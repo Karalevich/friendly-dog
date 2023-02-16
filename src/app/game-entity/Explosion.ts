@@ -1,6 +1,5 @@
 import boom from '../../img/boom.png'
 import explosion from '../../audio/explosion.wav'
-import { EXPLOSION_SIZE_RATIO, EXPLOSION_SPRITE_HEIGHT, EXPLOSION_SPRITE_WIDTH } from '../constants/explosion-const'
 
 export default class Explosion {
   private readonly x: number
@@ -10,31 +9,42 @@ export default class Explosion {
   private readonly spriteWidth: number
   private readonly spriteHeight: number
   private readonly framesChangingFrequency: number
+  private timeSinceLastChangeFrame: number
   private readonly angle: number
+  private readonly maxFrames: number
+  private readonly sizeRation: number
+  isReadyDelete: boolean
   private currentFrame: number
   private readonly image: HTMLImageElement
   private readonly sound: HTMLAudioElement
 
   constructor(x: number, y: number) {
-    this.spriteWidth = EXPLOSION_SPRITE_WIDTH
-    this.spriteHeight = EXPLOSION_SPRITE_HEIGHT
-    this.width = this.spriteWidth * EXPLOSION_SIZE_RATIO
-    this.height = this.spriteHeight * EXPLOSION_SIZE_RATIO
+    this.spriteWidth = 200
+    this.spriteHeight = 179
+    this.sizeRation = 0.5
+    this.width = this.spriteWidth * this.sizeRation
+    this.height = this.spriteHeight * this.sizeRation
     this.x = x
     this.y = y
+    this.framesChangingFrequency = 50
+    this.timeSinceLastChangeFrame = 0
     this.currentFrame = 0
-    this.framesChangingFrequency = 10
+    this.maxFrames = 4
     this.angle = Number((Math.random() * Math.PI * 2).toFixed(2))
     this.image = new Image()
     this.image.src = boom
     this.sound = new Audio()
     this.sound.src = explosion
+    this.isReadyDelete = false
   }
 
-  update(gameFrame: number, ctx: CanvasRenderingContext2D) {
+  update(deltaTime: number, gameFrame: number, ctx: CanvasRenderingContext2D) {
     if (this.currentFrame === 0) this.sound.play()
-    if (gameFrame % this.framesChangingFrequency === 0) {
-      this.currentFrame++
+    this.timeSinceLastChangeFrame += deltaTime
+    if (this.timeSinceLastChangeFrame > this.framesChangingFrequency) {
+      if (this.currentFrame > this.maxFrames) this.isReadyDelete = true
+      else this.currentFrame++
+      this.timeSinceLastChangeFrame = 0
     }
     this.draw(ctx)
   }

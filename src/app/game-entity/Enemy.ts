@@ -27,7 +27,7 @@ import {
 } from './Movement'
 import { countEnemySize } from '../utils/enemy-utils'
 
-class Enemy {
+export class Enemy {
   private x: number
   private y: number
   private readonly width: number
@@ -36,8 +36,10 @@ class Enemy {
   private readonly spriteHeight: number
   private currentFrame: number
   private readonly countImageFrames: number
+  private timeSinceLastChangeFrame: number
   private readonly framesChangingFrequency: number
   private readonly sizeRatio: number
+  isReadyDelete: boolean
   private readonly img: HTMLImageElement
   private readonly movementStrategy: MovementInterface
 
@@ -54,15 +56,17 @@ class Enemy {
     this.spriteHeight = spriteHeight
     this.sizeRatio = SIZE_RATIO
     this.currentFrame = 0
-    this.framesChangingFrequency = Math.floor(Math.random() * 3 + 1)
+    this.framesChangingFrequency = 16
+    this.timeSinceLastChangeFrame = 0
     this.width = countEnemySize(this.spriteWidth, this.sizeRatio)
     this.height = countEnemySize(this.spriteHeight, this.sizeRatio)
-    this.x = Math.round(Math.random() * (CANVAS_WIDTH - this.width))
+    this.x = CANVAS_WIDTH + this.width
     this.y = Math.round(Math.random() * (CANVAS_HEIGHT - this.height))
+    this.isReadyDelete = false
     this.movementStrategy = movement
   }
 
-  update(gameFrame: number, ctx: CanvasRenderingContext2D) {
+  update(deltaTime: number, gameFrame: number, ctx: CanvasRenderingContext2D) {
     const arg = {
       x: this.x,
       y: this.y,
@@ -73,8 +77,13 @@ class Enemy {
     const { x, y } = this.movementStrategy.move(arg)
     this.x = x
     this.y = y
-    if (gameFrame % this.framesChangingFrequency === 0) {
+    this.timeSinceLastChangeFrame += deltaTime
+    if (this.timeSinceLastChangeFrame > this.framesChangingFrequency) {
       this.currentFrame < this.countImageFrames ? this.currentFrame++ : (this.currentFrame = 0)
+      this.timeSinceLastChangeFrame = 0
+    }
+    if (this.x + this.width < 0) {
+      this.isReadyDelete = true
     }
     this.draw(ctx)
   }
@@ -96,7 +105,7 @@ class Enemy {
 
 export class BatEnemy extends Enemy {
   constructor() {
-    super(new ShakeTypeMovement(), ENEMY_IMG1, COUNT_ENEMY1_FRAMES, ENEMY1_SPRITE_WIDTH, ENEMY1_SPRITE_HEIGHT)
+    super(new SineWaveTypeMovement(), ENEMY_IMG1, COUNT_ENEMY1_FRAMES, ENEMY1_SPRITE_WIDTH, ENEMY1_SPRITE_HEIGHT)
   }
 }
 
@@ -108,12 +117,12 @@ export class AngryBatEnemy extends Enemy {
 
 export class GhostEnemy extends Enemy {
   constructor() {
-    super(new SnakeTypeMovement(), ENEMY_IMG3, COUNT_ENEMY3_FRAMES, ENEMY3_SPRITE_WIDTH, ENEMY3_SPRITE_HEIGHT)
+    super(new SineWaveTypeMovement(), ENEMY_IMG3, COUNT_ENEMY3_FRAMES, ENEMY3_SPRITE_WIDTH, ENEMY3_SPRITE_HEIGHT)
   }
 }
 
 export class BuzzSawEnemy extends Enemy {
   constructor() {
-    super(new RandomJumpMovement(), ENEMY_IMG4, COUNT_ENEMY4_FRAMES, ENEMY4_SPRITE_WIDTH, ENEMY4_SPRITE_HEIGHT)
+    super(new SineWaveTypeMovement(), ENEMY_IMG4, COUNT_ENEMY4_FRAMES, ENEMY4_SPRITE_WIDTH, ENEMY4_SPRITE_HEIGHT)
   }
 }

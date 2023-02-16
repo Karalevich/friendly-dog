@@ -81,8 +81,6 @@ export class SineWaveTypeMovement implements MovementInterface {
     const newY = y + this.amplitude * Math.sin(this.angle)
     this.angle += this.length
 
-    if (newX + width < 0) newX = CANVAS_WIDTH
-
     return { x: newX, y: newY }
   }
 }

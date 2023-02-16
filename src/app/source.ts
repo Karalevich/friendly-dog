@@ -13,7 +13,7 @@ import playerSpriteAnimation from './utils/player-utils'
 import { bcgAnimations } from './utils/bcg-utils'
 
 import Explosion from './game-entity/Explosion'
-import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, GhostEnemy } from './game-entity/Enemy'
+import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, Enemy, GhostEnemy } from './game-entity/Enemy'
 import { NEW_ENEMY_APPEAR_INTERVAL } from './constants/enemy-const'
 
 let gameFrame: number = 0
@@ -26,7 +26,7 @@ const explosions: Array<Explosion> = []
 const batEnemies: Array<BatEnemy> = []
 const angryBatEnemies: Array<AngryBatEnemy> = []
 const ghostEnemies: Array<GhostEnemy> = []
-export const buzzSawEnemies: Array<BuzzSawEnemy> = []
+const buzzSawEnemies: Array<BuzzSawEnemy> = []
 
 window.addEventListener('load', () => {
   const animate = (timestamp: number): void => {
@@ -51,22 +51,15 @@ window.addEventListener('load', () => {
       bcg.update(START_GAME_SPEED, context)
     })
 
-    explosions.forEach((explosion) => {
-      explosion.update(gameFrame, context)
-    })
-
-    buzzSawEnemies.forEach((enemy) => {
-      enemy.update(gameFrame, context)
-    })
-    // batEnemies.forEach((enemy) => {
-    //   enemy.update(gameFrame, context)
-    // })
-    // angryBatEnemies.forEach((enemy) => {
-    //   enemy.update(gameFrame, context)
-    // })
-    // ghostEnemies.forEach((enemy) => {
-    //   enemy.update(gameFrame, context)
-    // })
+    const gameObjects: Array<Enemy | Explosion> = [
+      ...explosions,
+      ...buzzSawEnemies,
+      ...batEnemies,
+      ...angryBatEnemies,
+      ...ghostEnemies,
+    ]
+    gameObjects.forEach((obj) => obj.update(deltaTime, gameFrame, context))
+    gameObjects.filter((obj) => !obj.isReadyDelete)
 
     gameFrame++
     requestAnimationFrame(animate)
