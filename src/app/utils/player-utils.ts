@@ -5,6 +5,7 @@ const playerSpriteAnimation: AnimationType = {}
 PLAYER_STATES.forEach((state, index) => {
   let frames: AnimationNameType = {
     loc: [],
+    countFrames: state.frames - 1,
   }
   for (let i = 0; i < state.frames; i++) {
     let positionX = i * SPRITE_WIDTH

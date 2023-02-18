@@ -7,6 +7,7 @@ export type StateType = {
 
 export type AnimationNameType = {
   loc: Array<{ x: number; y: number }>
+  countFrames: number
 }
 
 export type AnimationType = {

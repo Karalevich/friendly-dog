@@ -4,6 +4,7 @@ import {
   COUNT_ENEMY2_FRAMES,
   COUNT_ENEMY3_FRAMES,
   COUNT_ENEMY4_FRAMES,
+  COUNT_ENEMY5_FRAMES,
   ENEMY1_SPRITE_HEIGHT,
   ENEMY1_SPRITE_WIDTH,
   ENEMY2_SPRITE_HEIGHT,
@@ -12,10 +13,14 @@ import {
   ENEMY3_SPRITE_WIDTH,
   ENEMY4_SPRITE_HEIGHT,
   ENEMY4_SPRITE_WIDTH,
+  ENEMY5_SPRITE_HEIGHT,
+  ENEMY5_SPRITE_WIDTH,
   ENEMY_IMG1,
   ENEMY_IMG2,
   ENEMY_IMG3,
   ENEMY_IMG4,
+  ENEMY_IMG5,
+  JELLY_SIZE_RATIO,
   SIZE_RATIO,
 } from '../constants/enemy-const'
 import {
@@ -24,9 +29,10 @@ import {
   SineWaveTypeMovement,
   SnakeTypeMovement,
   RandomJumpMovement,
+  HorizontalMovement,
 } from './Movement'
 import { countEnemySize } from '../utils/enemy-utils'
-import { GameEntity } from './GameEntity'
+import { GameEntity, UpdateType } from './GameEntity'
 
 export class Enemy extends GameEntity {
   private readonly movementStrategy: MovementInterface
@@ -38,19 +44,22 @@ export class Enemy extends GameEntity {
     image: HTMLImageElement,
     countImageFrames: number,
     spriteWidth: number,
-    spriteHeight: number
+    spriteHeight: number,
+    sizeRatio: number,
+    yStartPosition?: number
   ) {
-    super(image, countImageFrames, spriteWidth, spriteHeight, SIZE_RATIO)
+    super(image, countImageFrames, spriteWidth, spriteHeight, sizeRatio)
     this.x = CANVAS_WIDTH + this.width
-    this.y = Math.round(Math.random() * (CANVAS_HEIGHT - this.height))
+    this.y = yStartPosition || Math.round(Math.random() * (CANVAS_HEIGHT - this.height))
     this.movementStrategy = movement
   }
 
-  update(deltaTime: number, ctx: CanvasRenderingContext2D, gameFrame: number) {
+  update(argObj: UpdateType) {
+    const { deltaTime, ctx, gameFrame } = argObj
     const arg = {
       x: this.x,
       y: this.y,
-      gameFrame,
+      gameFrame: gameFrame || 0,
       width: this.width,
       height: this.height,
     }
@@ -72,24 +81,66 @@ export class Enemy extends GameEntity {
 
 export class BatEnemy extends Enemy {
   constructor() {
-    super(new SineWaveTypeMovement(), ENEMY_IMG1, COUNT_ENEMY1_FRAMES, ENEMY1_SPRITE_WIDTH, ENEMY1_SPRITE_HEIGHT)
+    super(
+      new SineWaveTypeMovement(),
+      ENEMY_IMG1,
+      COUNT_ENEMY1_FRAMES,
+      ENEMY1_SPRITE_WIDTH,
+      ENEMY1_SPRITE_HEIGHT,
+      SIZE_RATIO
+    )
   }
 }
 
 export class AngryBatEnemy extends Enemy {
   constructor() {
-    super(new SineWaveTypeMovement(), ENEMY_IMG2, COUNT_ENEMY2_FRAMES, ENEMY2_SPRITE_WIDTH, ENEMY2_SPRITE_HEIGHT)
+    super(
+      new SineWaveTypeMovement(),
+      ENEMY_IMG2,
+      COUNT_ENEMY2_FRAMES,
+      ENEMY2_SPRITE_WIDTH,
+      ENEMY2_SPRITE_HEIGHT,
+      SIZE_RATIO
+    )
   }
 }
 
 export class GhostEnemy extends Enemy {
   constructor() {
-    super(new SineWaveTypeMovement(), ENEMY_IMG3, COUNT_ENEMY3_FRAMES, ENEMY3_SPRITE_WIDTH, ENEMY3_SPRITE_HEIGHT)
+    super(
+      new SineWaveTypeMovement(),
+      ENEMY_IMG3,
+      COUNT_ENEMY3_FRAMES,
+      ENEMY3_SPRITE_WIDTH,
+      ENEMY3_SPRITE_HEIGHT,
+      SIZE_RATIO
+    )
   }
 }
 
 export class BuzzSawEnemy extends Enemy {
   constructor() {
-    super(new SineWaveTypeMovement(), ENEMY_IMG4, COUNT_ENEMY4_FRAMES, ENEMY4_SPRITE_WIDTH, ENEMY4_SPRITE_HEIGHT)
+    super(
+      new SineWaveTypeMovement(),
+      ENEMY_IMG4,
+      COUNT_ENEMY4_FRAMES,
+      ENEMY4_SPRITE_WIDTH,
+      ENEMY4_SPRITE_HEIGHT,
+      SIZE_RATIO
+    )
+  }
+}
+
+export class JellyEnemy extends Enemy {
+  constructor() {
+    super(
+      new HorizontalMovement(),
+      ENEMY_IMG5,
+      COUNT_ENEMY5_FRAMES,
+      ENEMY5_SPRITE_WIDTH,
+      ENEMY5_SPRITE_HEIGHT,
+      JELLY_SIZE_RATIO,
+      CANVAS_HEIGHT - ENEMY5_SPRITE_HEIGHT * JELLY_SIZE_RATIO
+    )
   }
 }

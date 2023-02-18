@@ -8,4 +8,4 @@ const layer3 = new Layer(BCG_LAYER3, 0.6, START_GAME_SPEED)
 const layer4 = new Layer(BCG_LAYER4, 0.8, START_GAME_SPEED)
 const layer5 = new Layer(BCG_LAYER5, 1, START_GAME_SPEED)
 
-export const bcgAnimations: Array<Layer> = [layer1, layer2, layer3, layer4, layer5]
+export const bcgParallax: Array<Layer> = [layer1, layer2, layer3, layer4, layer5]

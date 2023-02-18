@@ -84,3 +84,17 @@ export class SineWaveTypeMovement implements MovementInterface {
     return { x: newX, y: newY }
   }
 }
+
+export class HorizontalMovement implements MovementInterface {
+  private readonly speed: number
+
+  constructor() {
+    this.speed = Math.random() * 2 + 1
+  }
+
+  public move({ x, y, width }: MoveArgumentsType): { x: number; y: number } {
+    let newX = x - this.speed
+
+    return { x: newX, y }
+  }
+}

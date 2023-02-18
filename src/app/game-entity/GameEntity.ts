@@ -1,11 +1,20 @@
+import { InputHandler } from './InputHandler'
+
+export type UpdateType = {
+  deltaTime: number
+  ctx: CanvasRenderingContext2D
+  gameFrame?: number
+  input?: InputHandler
+}
+
 export abstract class GameEntity {
   isReadyDelete: boolean
   protected currentFrame: number
   protected readonly width: number
   protected readonly height: number
   private readonly spriteWidth: number
-  private readonly spriteHeight: number
-  private readonly countImageFrames: number
+  protected readonly spriteHeight: number
+  protected countImageFrames: number
   private timeSinceLastChangeFrame: number
   private readonly framesChangingFrequency: number
   protected readonly sizeRatio: number
@@ -31,8 +40,8 @@ export abstract class GameEntity {
     this.isReadyDelete = false
   }
 
-  abstract update(deltaTime: number, ctx: CanvasRenderingContext2D, gameFrame?: number): void
-  abstract draw(ctx: CanvasRenderingContext2D): void
+  abstract update(argObj: UpdateType): void
+  protected abstract draw(ctx: CanvasRenderingContext2D): void
 
   frequencyCount(deltaTime: number): void {
     this.timeSinceLastChangeFrame += deltaTime

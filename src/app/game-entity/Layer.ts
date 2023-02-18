@@ -30,6 +30,6 @@ export default class Layer {
 
   private draw(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
-    ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height)
+    ctx.drawImage(this.image, this.x + this.width - this.speed, this.y, this.width, this.height)
   }
 }

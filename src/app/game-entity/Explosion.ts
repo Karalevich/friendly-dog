@@ -1,5 +1,5 @@
 import explosion from '../../audio/explosion.wav'
-import { GameEntity } from './GameEntity'
+import { GameEntity, UpdateType } from './GameEntity'
 import {
   COUNT_EXPLOSION_FRAMES,
   EXPLOSION_IMG,
@@ -23,7 +23,8 @@ export default class Explosion extends GameEntity {
     this.sound.src = explosion
   }
 
-  update(deltaTime: number, ctx: CanvasRenderingContext2D) {
+  update(argObj: UpdateType) {
+    const { deltaTime, ctx } = argObj
     if (this.currentFrame === 0) this.sound.play()
     this.frequencyCount(deltaTime)
     if (this.currentFrame >= COUNT_EXPLOSION_FRAMES) {
