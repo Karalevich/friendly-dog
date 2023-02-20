@@ -31,13 +31,10 @@ import {
   RandomJumpMovement,
   HorizontalMovement,
 } from './Movement'
-import { countEnemySize } from '../utils/enemy-utils'
 import { GameEntity, UpdateType } from './GameEntity'
 
 export class Enemy extends GameEntity {
   private readonly movementStrategy: MovementInterface
-  private x: number
-  private y: number
 
   constructor(
     movement: MovementInterface,
@@ -48,9 +45,15 @@ export class Enemy extends GameEntity {
     sizeRatio: number,
     yStartPosition?: number
   ) {
-    super(image, countImageFrames, spriteWidth, spriteHeight, sizeRatio)
-    this.x = CANVAS_WIDTH + this.width
-    this.y = yStartPosition || Math.round(Math.random() * (CANVAS_HEIGHT - this.height))
+    super(
+      CANVAS_WIDTH + spriteWidth,
+      yStartPosition || Math.round(Math.random() * (CANVAS_HEIGHT - spriteHeight)),
+      image,
+      countImageFrames,
+      spriteWidth,
+      spriteHeight,
+      sizeRatio
+    )
     this.movementStrategy = movement
   }
 

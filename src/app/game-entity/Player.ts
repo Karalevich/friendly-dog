@@ -6,31 +6,45 @@ import { DIRECTION, InputHandler } from './InputHandler'
 export class Player extends GameEntity {
   private readonly gameWidth: number
   private readonly gameHeight: number
-  private x: number
-  private y: number
   private frameX: number
   private frameY: number
   private speed: number
   private velocityY: number
   private readonly gravity: number
   private typeMovement: TYPE_PLAYER_MOVEMENT
+  private isPlayerLost_: boolean
 
   constructor(gameWidth: number, gameHeight: number) {
-    super(PLAYER_IMG, playerSpriteAnimation[TYPE_PLAYER_MOVEMENT.RUN].countFrames, SPRITE_WIDTH, SPRITE_HEIGHT, 1)
+    super(
+      0,
+      gameHeight - SPRITE_HEIGHT,
+      PLAYER_IMG,
+      playerSpriteAnimation[TYPE_PLAYER_MOVEMENT.RUN].countFrames,
+      SPRITE_WIDTH,
+      SPRITE_HEIGHT,
+      1
+    )
     this.gameWidth = gameWidth
     this.gameHeight = gameHeight
     this.frameX = 0
     this.frameY = 0
-    this.x = 0
-    this.y = this.gameHeight - this.spriteHeight
     this.speed = 0
     this.velocityY = 0
-    this.gravity = 0.5
+    this.gravity = 0.8
     this.typeMovement = TYPE_PLAYER_MOVEMENT.RUN
+    this.isPlayerLost_ = false
   }
 
   update(argObj: UpdateType) {
-    const { deltaTime, ctx, input } = argObj
+    const { deltaTime, ctx, input, enemies } = argObj
+    enemies?.forEach((enemy) => {
+      const dx = enemy.x + enemy.width / 2 - (this.x + this.width / 2)
+      const dy = enemy.y + enemy.height / 2 - (this.y + this.height / 2)
+      const distance = Math.sqrt(dx * dx + dy * dy) * 1.2
+      if (distance < enemy.width / 2 + this.width / 2) {
+        this.isPlayerLost_ = true
+      }
+    })
     this.frequencyCount(deltaTime)
     input && this.playerMovement(input)
     this.draw(ctx)
@@ -94,5 +108,9 @@ export class Player extends GameEntity {
       SPRITE_WIDTH,
       SPRITE_HEIGHT
     )
+  }
+
+  get isPlayerLost() {
+    return this.isPlayerLost_
   }
 }

@@ -89,7 +89,7 @@ export class HorizontalMovement implements MovementInterface {
   private readonly speed: number
 
   constructor() {
-    this.speed = Math.random() * 2 + 1
+    this.speed = 2
   }
 
   public move({ x, y, width }: MoveArgumentsType): { x: number; y: number } {

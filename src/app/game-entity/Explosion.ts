@@ -11,13 +11,17 @@ import {
 export default class Explosion extends GameEntity {
   private readonly angle: number
   private readonly sound: HTMLAudioElement
-  private readonly x: number
-  private readonly y: number
 
   constructor(x: number, y: number) {
-    super(EXPLOSION_IMG, COUNT_EXPLOSION_FRAMES, EXPLOSION_SPRITE_WIDTH, EXPLOSION_SPRITE_HEIGHT, EXPLOSION_SIZE_RATIO)
-    this.x = x
-    this.y = y
+    super(
+      x,
+      y,
+      EXPLOSION_IMG,
+      COUNT_EXPLOSION_FRAMES,
+      EXPLOSION_SPRITE_WIDTH,
+      EXPLOSION_SPRITE_HEIGHT,
+      EXPLOSION_SIZE_RATIO
+    )
     this.angle = Number((Math.random() * Math.PI * 2).toFixed(2))
     this.sound = new Audio()
     this.sound.src = explosion

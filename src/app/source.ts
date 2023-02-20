@@ -2,7 +2,7 @@ import { canvas, CANVAS_HEIGHT, CANVAS_WIDTH, START_GAME_SPEED } from './constan
 import { context as ctx } from './constants/canvas-const'
 import { bcgParallax } from './utils/bcg-utils'
 import Explosion from './game-entity/Explosion'
-import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, GhostEnemy, JellyEnemy } from './game-entity/Enemy'
+import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, Enemy, GhostEnemy, JellyEnemy } from './game-entity/Enemy'
 import { NEW_ENEMY_APPEAR_INTERVAL } from './constants/enemy-const'
 import { GameEntity } from './game-entity/GameEntity'
 import { InputHandler } from './game-entity/InputHandler'
@@ -14,7 +14,8 @@ let gameFrame: number = 0
 let timeToNextEnemy = 0
 let score = 0
 let lastTime = 0
-let gameObjects: Array<GameEntity> = []
+let enemies: Array<Enemy> = []
+let explosions: Array<Explosion> = []
 
 const canvasPosition = canvas.getBoundingClientRect()
 const input = new InputHandler()
@@ -32,7 +33,7 @@ window.addEventListener('load', () => {
       // gameObjects.push(new BatEnemy())
       // gameObjects.push(new AngryBatEnemy())
       // gameObjects.push(new GhostEnemy())
-      gameObjects.push(new JellyEnemy())
+      enemies.push(new JellyEnemy())
 
       timeToNextEnemy = 0
     }
@@ -40,24 +41,33 @@ window.addEventListener('load', () => {
     //   bcg.update(START_GAME_SPEED, ctx)
     // })
     bcgSingle.update(START_GAME_SPEED, ctx)
+    player.update({ deltaTime, ctx, input, enemies })
 
-    player.update({ deltaTime, ctx, gameFrame, input })
-
-    gameObjects.forEach((obj) => obj.update({ deltaTime, ctx, gameFrame }))
-    gameObjects = gameObjects.filter((obj) => {
-      if (obj.isReadyDelete && obj.constructor.name.includes('Enemy')) score++
-      return !obj.isReadyDelete
+    enemies.forEach((enemy) => enemy.update({ deltaTime, ctx, gameFrame }))
+    enemies = enemies.filter((enemy) => {
+      if (enemy.isReadyDelete && enemy.constructor.name.includes('Enemy')) score++
+      return !enemy.isReadyDelete
     })
-    displayStatusText(ctx)
+    explosions.forEach((explosion) => explosion.update({ deltaTime, ctx, gameFrame }))
+    explosions = explosions.filter((explosion) => {
+      if (explosion.isReadyDelete && explosion.constructor.name.includes('Enemy')) score++
+      return !explosion.isReadyDelete
+    })
     gameFrame++
-    requestAnimationFrame(animate)
+
+    if (player.isPlayerLost) {
+      gameOverStatus(ctx)
+    } else {
+      displayStatusText(ctx)
+      requestAnimationFrame(animate)
+    }
   }
   animate(lastTime)
 
   window.addEventListener('click', (e) => {
     let positionX = e.x - canvasPosition.left
     let positionY = e.y - canvasPosition.top
-    gameObjects.push(new Explosion(positionX, positionY))
+    explosions.push(new Explosion(positionX, positionY))
   })
 })
 
@@ -67,4 +77,12 @@ const displayStatusText = (context: CanvasRenderingContext2D) => {
   context.fillText('Score: ' + score, 20, 50)
   context.fillStyle = 'white'
   context.fillText('Score: ' + score, 22, 52)
+}
+
+const gameOverStatus = (context: CanvasRenderingContext2D) => {
+  context.font = '40px Helvetica'
+  context.fillStyle = 'black'
+  context.fillText('Game Over! Your Score: ' + score, 50, CANVAS_HEIGHT / 2)
+  context.fillStyle = 'white'
+  context.fillText('Game Over! Your Score: ' + score, 52, CANVAS_HEIGHT / 1.98)
 }

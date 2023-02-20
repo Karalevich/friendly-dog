@@ -5,7 +5,7 @@ import enemy4 from '../../img/enemy4.png'
 import enemy5 from '../../img/enemy5.png'
 
 export const SIZE_RATIO = 0.4
-export const JELLY_SIZE_RATIO = 0.8
+export const JELLY_SIZE_RATIO = 0.6
 
 export const ENEMY_IMG1 = new Image()
 ENEMY_IMG1.src = enemy1
@@ -37,4 +37,4 @@ export const COUNT_ENEMY5_FRAMES = 5
 export const ENEMY5_SPRITE_WIDTH = 160
 export const ENEMY5_SPRITE_HEIGHT = 119
 
-export const NEW_ENEMY_APPEAR_INTERVAL = 2000
+export const NEW_ENEMY_APPEAR_INTERVAL = 4000

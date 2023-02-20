@@ -1,17 +1,21 @@
 import { InputHandler } from './InputHandler'
+import { Enemy } from './Enemy'
 
 export type UpdateType = {
   deltaTime: number
   ctx: CanvasRenderingContext2D
   gameFrame?: number
   input?: InputHandler
+  enemies?: Array<Enemy>
 }
 
 export abstract class GameEntity {
   isReadyDelete: boolean
+  private x_: number
+  private y_: number
   protected currentFrame: number
-  protected readonly width: number
-  protected readonly height: number
+  private width_: number
+  private height_: number
   private readonly spriteWidth: number
   protected readonly spriteHeight: number
   protected countImageFrames: number
@@ -21,12 +25,16 @@ export abstract class GameEntity {
   private readonly img: HTMLImageElement
 
   protected constructor(
+    x: number,
+    y: number,
     image: HTMLImageElement,
     countImageFrames: number,
     spriteWidth: number,
     spriteHeight: number,
     sizeRatio: number
   ) {
+    this.x_ = x
+    this.y_ = y
     this.img = image
     this.countImageFrames = countImageFrames
     this.spriteWidth = spriteWidth
@@ -35,12 +43,13 @@ export abstract class GameEntity {
     this.currentFrame = 0
     this.framesChangingFrequency = 16
     this.timeSinceLastChangeFrame = 0
-    this.width = this.spriteWidth * this.sizeRatio
-    this.height = this.spriteHeight * this.sizeRatio
+    this.width_ = this.spriteWidth * this.sizeRatio
+    this.height_ = this.spriteHeight * this.sizeRatio
     this.isReadyDelete = false
   }
 
   abstract update(argObj: UpdateType): void
+
   protected abstract draw(ctx: CanvasRenderingContext2D): void
 
   frequencyCount(deltaTime: number): void {
@@ -63,5 +72,37 @@ export abstract class GameEntity {
       this.width,
       this.height
     )
+  }
+
+  public get x() {
+    return this.x_
+  }
+
+  public set x(x: number) {
+    this.x_ = x
+  }
+
+  public get y() {
+    return this.y_
+  }
+
+  public set y(y: number) {
+    this.y_ = y
+  }
+
+  public get width() {
+    return this.width_
+  }
+
+  public set width(width: number) {
+    this.width_ = width
+  }
+
+  public get height() {
+    return this.height_
+  }
+
+  public set height(height: number) {
+    this.height_ = height
   }
 }
