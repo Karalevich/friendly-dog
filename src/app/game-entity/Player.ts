@@ -38,10 +38,10 @@ export class Player extends GameEntity {
   update(argObj: UpdateType) {
     const { deltaTime, ctx, input, enemies } = argObj
     enemies?.forEach((enemy) => {
-      const dx = enemy.x + enemy.width / 2 - (this.x + this.width / 2)
-      const dy = enemy.y + enemy.height / 2 - (this.y + this.height / 2)
-      const distance = Math.sqrt(dx * dx + dy * dy) * 1.2
-      if (distance < enemy.width / 2 + this.width / 2) {
+      const dx = enemy.x + enemy.width / 2 - 20 - (this.x + this.width / 2)
+      const dy = enemy.y + enemy.height / 2 - (this.y + this.height / 2 + 20)
+      const distance = Math.sqrt(dx * dx + dy * dy)
+      if (distance < enemy.width / 3 + this.width / 3) {
         this.isPlayerLost_ = true
       }
     })
@@ -67,7 +67,10 @@ export class Player extends GameEntity {
     else if (this.checkBorder(this.x, this.gameWidth, this.width)) this.x = this.gameWidth - this.width
 
     // vertical movement
-    if (input.keys.has(DIRECTION.UP) && this.checkBorder(this.y, this.gameHeight, this.height)) {
+    if (
+      (input.keys.has(DIRECTION.UP) || input.keys.has(DIRECTION.SWIPE_UP)) &&
+      this.checkBorder(this.y, this.gameHeight, this.height)
+    ) {
       this.velocityY -= PLAYER_SPEED.UP
     } else if (input.keys.has(DIRECTION.DOWN)) {
       this.velocityY = PLAYER_SPEED.DOWN
@@ -108,6 +111,17 @@ export class Player extends GameEntity {
       SPRITE_WIDTH,
       SPRITE_HEIGHT
     )
+  }
+
+  public restart() {
+    this.x = 0
+    this.y = this.gameHeight - SPRITE_HEIGHT
+    this.frameX = 0
+    this.frameY = 0
+    this.speed = 0
+    this.velocityY = 0
+    this.isPlayerLost_ = false
+    this.typeMovement = TYPE_PLAYER_MOVEMENT.RUN
   }
 
   get isPlayerLost() {

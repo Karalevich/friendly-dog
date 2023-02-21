@@ -69,6 +69,13 @@ window.addEventListener('load', () => {
     let positionY = e.y - canvasPosition.top
     explosions.push(new Explosion(positionX, positionY))
   })
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && player.isPlayerLost) {
+      restartGame()
+      animate(lastTime)
+    }
+  })
 })
 
 const displayStatusText = (context: CanvasRenderingContext2D) => {
@@ -82,7 +89,19 @@ const displayStatusText = (context: CanvasRenderingContext2D) => {
 const gameOverStatus = (context: CanvasRenderingContext2D) => {
   context.font = '40px Helvetica'
   context.fillStyle = 'black'
-  context.fillText('Game Over! Your Score: ' + score, 50, CANVAS_HEIGHT / 2)
+  context.textAlign = 'center'
+  context.fillText('Game Over! Your Score: ' + score, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
   context.fillStyle = 'white'
-  context.fillText('Game Over! Your Score: ' + score, 52, CANVAS_HEIGHT / 1.98)
+  context.fillText('Game Over! Your Score: ' + score, CANVAS_WIDTH / 1.98, CANVAS_HEIGHT / 1.98)
+}
+
+const restartGame = () => {
+  player.restart()
+  bcgSingle.restart()
+  gameFrame = 0
+  timeToNextEnemy = 0
+  score = 0
+  lastTime = 0
+  enemies = []
+  explosions = []
 }
