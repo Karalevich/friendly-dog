@@ -1,18 +1,24 @@
-import { AnimationNameType, AnimationType } from '../types/types'
-import { PLAYER_STATES, SPRITE_HEIGHT, SPRITE_WIDTH } from '../constants/canvas-const'
+import { AnimationNameType, AnimationType, StateType } from '../types/types'
 
-const playerSpriteAnimation: AnimationType = {}
-PLAYER_STATES.forEach((state, index) => {
-  let frames: AnimationNameType = {
-    loc: [],
-    countFrames: state.frames - 1,
-  }
-  for (let i = 0; i < state.frames; i++) {
-    let positionX = i * SPRITE_WIDTH
-    let positionY = index * SPRITE_HEIGHT
-    frames.loc.push({ x: positionX, y: positionY })
-  }
-  playerSpriteAnimation[state.name] = frames
-})
+const getPlayerSpriteAnimation = (
+  playerStates: Array<StateType>,
+  spriteWidth: number,
+  spriteHeight: number
+): AnimationType => {
+  const playerSpriteAnimation: AnimationType = {}
+  playerStates.forEach((state, index) => {
+    let frames: AnimationNameType = {
+      loc: [],
+      countFrames: state.frames - 1,
+    }
+    for (let i = 0; i < state.frames; i++) {
+      let positionX = i * spriteWidth
+      let positionY = index * spriteHeight
+      frames.loc.push({ x: positionX, y: positionY })
+    }
+    playerSpriteAnimation[state.name] = frames
+  })
+  return playerSpriteAnimation
+}
 
-export default playerSpriteAnimation
+export default getPlayerSpriteAnimation

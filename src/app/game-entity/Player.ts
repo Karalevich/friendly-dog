@@ -1,7 +1,83 @@
 import { GameEntity, UpdateType } from './GameEntity'
-import { PLAYER_IMG, PLAYER_SPEED, SPRITE_HEIGHT, SPRITE_WIDTH, TYPE_PLAYER_MOVEMENT } from '../constants/canvas-const'
-import playerSpriteAnimation from '../utils/player-utils'
-import { DIRECTION, InputHandler } from './InputHandler'
+import getPlayerSpriteAnimation from '../utils/player-utils'
+import { INPUT_KEYS, InputHandler } from './InputHandler'
+import { StateType } from '../types/types'
+import player from '../../img/player.png'
+
+export enum PLAYER_SPEED {
+  UP = 23,
+  DOWN = 5,
+  LEFT = -5,
+  RIGHT = 5,
+}
+
+export enum TYPE_PLAYER_MOVEMENT {
+  IDLE = 'IDLE',
+  RUN = 'RUN',
+  JUMP = 'JUMP',
+  FALL = 'FALL',
+  DIZZY = 'DIZZY',
+  SIT = 'SIT',
+  ROLL = 'ROLL',
+  BITE = 'BITE',
+  KO = 'KO',
+  GET_HIT = 'GET_HIT',
+}
+
+export const PLAYER_STATES: Array<StateType> = [
+  {
+    name: TYPE_PLAYER_MOVEMENT.IDLE,
+    frames: 7,
+  },
+  {
+    name: TYPE_PLAYER_MOVEMENT.JUMP,
+    frames: 7,
+  },
+  {
+    name: TYPE_PLAYER_MOVEMENT.FALL,
+    frames: 7,
+  },
+  {
+    name: TYPE_PLAYER_MOVEMENT.RUN,
+    frames: 9,
+  },
+
+  {
+    name: TYPE_PLAYER_MOVEMENT.DIZZY,
+    frames: 11,
+  },
+  {
+    name: TYPE_PLAYER_MOVEMENT.SIT,
+    frames: 5,
+  },
+  {
+    name: TYPE_PLAYER_MOVEMENT.ROLL,
+    frames: 7,
+  },
+  {
+    name: TYPE_PLAYER_MOVEMENT.BITE,
+    frames: 7,
+  },
+  {
+    name: TYPE_PLAYER_MOVEMENT.KO,
+    frames: 12,
+  },
+  {
+    name: TYPE_PLAYER_MOVEMENT.GET_HIT,
+    frames: 4,
+  },
+]
+
+export const PLAYER_IMG = new Image()
+PLAYER_IMG.src = player
+export const PLAYER_IMAGE_WIDTH = PLAYER_IMG.naturalWidth
+export const PLAYER_IMAGE_HEIGHT = PLAYER_IMG.naturalHeight
+export const PLAYER_IMAGE_COLUMNS = 12
+export const PLAYER_IMAGE_ROWS = 10
+export const SPRITE_WIDTH = Number((PLAYER_IMAGE_WIDTH / PLAYER_IMAGE_COLUMNS).toFixed(2))
+export const SPRITE_HEIGHT = Number((PLAYER_IMAGE_HEIGHT / PLAYER_IMAGE_ROWS).toFixed(2))
+
+const playerSpriteAnimation = getPlayerSpriteAnimation(PLAYER_STATES, SPRITE_WIDTH, SPRITE_HEIGHT)
 
 export class Player extends GameEntity {
   private readonly gameWidth: number
@@ -13,6 +89,7 @@ export class Player extends GameEntity {
   private readonly gravity: number
   private typeMovement: TYPE_PLAYER_MOVEMENT
   private isPlayerLost_: boolean
+  private playerStates: Array<StateType>
 
   constructor(gameWidth: number, gameHeight: number) {
     super(
@@ -30,9 +107,10 @@ export class Player extends GameEntity {
     this.frameY = 0
     this.speed = 0
     this.velocityY = 0
-    this.gravity = 0.8
+    this.gravity = 0.6
     this.typeMovement = TYPE_PLAYER_MOVEMENT.RUN
     this.isPlayerLost_ = false
+    this.playerStates = PLAYER_STATES
   }
 
   update(argObj: UpdateType) {
@@ -56,9 +134,9 @@ export class Player extends GameEntity {
     }
 
     // horizontal movement
-    if (input.keys.has(DIRECTION.RIGHT)) {
+    if (input.keys.has(INPUT_KEYS.RIGHT)) {
       this.speed = PLAYER_SPEED.RIGHT
-    } else if (input.keys.has(DIRECTION.LEFT)) {
+    } else if (input.keys.has(INPUT_KEYS.LEFT)) {
       this.speed = PLAYER_SPEED.LEFT
     }
 
@@ -68,11 +146,11 @@ export class Player extends GameEntity {
 
     // vertical movement
     if (
-      (input.keys.has(DIRECTION.UP) || input.keys.has(DIRECTION.SWIPE_UP)) &&
+      (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP)) &&
       this.checkBorder(this.y, this.gameHeight, this.height)
     ) {
       this.velocityY -= PLAYER_SPEED.UP
-    } else if (input.keys.has(DIRECTION.DOWN)) {
+    } else if (input.keys.has(INPUT_KEYS.DOWN)) {
       this.velocityY = PLAYER_SPEED.DOWN
     }
 

@@ -33,10 +33,10 @@ import {
 } from './Movement'
 import { GameEntity, UpdateType } from './GameEntity'
 
-export class Enemy extends GameEntity {
+export abstract class Enemy extends GameEntity {
   private readonly movementStrategy: MovementInterface
 
-  constructor(
+  protected constructor(
     movement: MovementInterface,
     image: HTMLImageElement,
     countImageFrames: number,
