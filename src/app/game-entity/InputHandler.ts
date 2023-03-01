@@ -4,6 +4,7 @@ export enum INPUT_KEYS {
   LEFT = 'ArrowLeft',
   RIGHT = 'ArrowRight',
   CONTROL = 'Control',
+  COMMAND = 'Command',
   SWIPE_UP = 'swipe up',
   SWIPE_DOWN = 'swipe down',
 }
@@ -18,7 +19,7 @@ export class InputHandler {
     this.keys = new Set<INPUT_KEYS>()
     this.touchY = 0
     this.touchThreshold = 30
-    this.supportingInputs = new Set<INPUT_KEYS>([INPUT_KEYS.DOWN, INPUT_KEYS.UP, INPUT_KEYS.LEFT, INPUT_KEYS.RIGHT, INPUT_KEYS.CONTROL])
+    this.supportingInputs = new Set<INPUT_KEYS>([INPUT_KEYS.DOWN, INPUT_KEYS.UP, INPUT_KEYS.LEFT, INPUT_KEYS.RIGHT, INPUT_KEYS.CONTROL, INPUT_KEYS.COMMAND])
 
     window.addEventListener('keydown', (e) => {
       console.log(e.key)

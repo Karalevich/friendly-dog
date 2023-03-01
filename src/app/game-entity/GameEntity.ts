@@ -41,7 +41,7 @@ export abstract class GameEntity {
     this.spriteHeight = spriteHeight
     this.sizeRatio = sizeRatio
     this.currentFrame = 0
-    this.framesChangingFrequency = 16
+    this.framesChangingFrequency = 17
     this.timeSinceLastChangeFrame = 0
     this.width_ = this.spriteWidth * this.sizeRatio
     this.height_ = this.spriteHeight * this.sizeRatio

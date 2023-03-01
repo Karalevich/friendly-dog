@@ -1,4 +1,5 @@
-import { AnimationNameType, AnimationType, StateType } from '../types/types'
+import { AnimationNameType, AnimationType} from '../types/types'
+import { StateType } from '../game-entity/PlayerState'
 
 const getPlayerSpriteAnimation = (
   playerStates: Array<StateType>,
