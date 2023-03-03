@@ -2,7 +2,7 @@ import { GameEntity, UpdateType } from './GameEntity'
 import getPlayerSpriteAnimation from '../utils/player-utils'
 import { INPUT_KEYS, InputHandler } from './InputHandler'
 import player from '../../img/player.png'
-import { PLAYER_MOVEMENT_INFORMATION, StateType, PLAYER_STATE } from './PlayerState'
+import { Fall, Jump, PLAYER_MOVEMENT_INFORMATION, PLAYER_STATE, Run, Sit, State } from './PlayerState'
 
 export enum PLAYER_SPEED {
   UP = 23,
@@ -21,18 +21,22 @@ export const SPRITE_WIDTH = Number((PLAYER_IMAGE_WIDTH / PLAYER_IMAGE_COLUMNS).t
 export const SPRITE_HEIGHT = Number((PLAYER_IMAGE_HEIGHT / PLAYER_IMAGE_ROWS).toFixed(2))
 
 const playerSpriteAnimation = getPlayerSpriteAnimation(PLAYER_MOVEMENT_INFORMATION, SPRITE_WIDTH, SPRITE_HEIGHT)
+console.log(playerSpriteAnimation)
 
 export class Player extends GameEntity {
   private readonly gameWidth: number
   private readonly gameHeight: number
   private frameX: number
-  private frameY: number
+  private frameY_: number
   private speed: number
-  private velocityY: number
+  velocityY: number
+  weight: number
   private readonly gravity: number
-  private playerState: PLAYER_STATE
+  private playerState: State
   private isPlayerLost_: boolean
-  private states: Array<StateType>
+  private readonly states: {
+    [key in PLAYER_STATE]: State
+  }
 
   constructor(gameWidth: number, gameHeight: number) {
     super(
@@ -47,13 +51,26 @@ export class Player extends GameEntity {
     this.gameWidth = gameWidth
     this.gameHeight = gameHeight
     this.frameX = 0
-    this.frameY = 0
+    this.frameY_ = 0
     this.speed = 0
     this.velocityY = 0
     this.gravity = 0.6
-    this.playerState = PLAYER_STATE.RUN
+    this.weight = 1
+    this.states = {
+      [PLAYER_STATE.SIT]: new Sit(this),
+      [PLAYER_STATE.RUN]: new Run(this),
+      [PLAYER_STATE.JUMP]: new Jump(this),
+      [PLAYER_STATE.FALL]: new Fall(this),
+      [PLAYER_STATE.DIZZY]: new Sit(this),
+      [PLAYER_STATE.ROLL]: new Sit(this),
+      [PLAYER_STATE.BITE]: new Sit(this),
+      [PLAYER_STATE.KO]: new Sit(this),
+      [PLAYER_STATE.GET_HIT]: new Sit(this),
+      [PLAYER_STATE.IDLE]: new Sit(this)
+    }
+    this.playerState = this.states[PLAYER_STATE.SIT]
     this.isPlayerLost_ = false
-    this.states = PLAYER_MOVEMENT_INFORMATION
+    this.playerState.enter()
   }
 
   update(argObj: UpdateType) {
@@ -67,6 +84,7 @@ export class Player extends GameEntity {
       }
     })
     this.frequencyCount(deltaTime)
+    input && this.playerState.handleInput(input)
     input && this.playerMovement(input)
     this.draw(ctx)
   }
@@ -86,43 +104,46 @@ export class Player extends GameEntity {
     else if (this.checkBorder(this.x, this.gameWidth, this.width)) this.x = this.gameWidth - this.width
 
     // vertical movement
-    if (
-      (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP)) &&
-      this.checkBorder(this.y, this.gameHeight, this.height)
-    ) {
-      this.velocityY -= PLAYER_SPEED.UP
-    } else if (input.keys.has(INPUT_KEYS.DOWN)) {
-      this.velocityY = PLAYER_SPEED.DOWN
-    }
+    // if (
+    //   (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP)) && this.checkBorder()) {
+    //   this.velocityY -= PLAYER_SPEED.UP
+    // } else if (input.keys.has(INPUT_KEYS.DOWN)) {
+    //   this.velocityY = PLAYER_SPEED.DOWN
+    // }
 
     this.y += this.velocityY
     //player jump
-    if (!this.checkBorder(this.y, this.gameHeight, this.height)) {
+    if (!this.checkBorder()) {
       const jumpCountFrames = playerSpriteAnimation[PLAYER_STATE.JUMP].countFrames
       this.velocityY += this.gravity
-      this.playerState = PLAYER_STATE.JUMP
+      this.setState(PLAYER_STATE.JUMP)
       this.countImageFrames = jumpCountFrames
       this.currentFrame = this.currentFrame > jumpCountFrames ? 0 : this.currentFrame
     } else {
       this.velocityY = 0
-      this.playerState = PLAYER_STATE.RUN
+      this.setState(PLAYER_STATE.RUN)
       this.countImageFrames = playerSpriteAnimation[PLAYER_STATE.RUN].countFrames
     }
 
-    if (this.checkBorder(this.y, this.gameHeight, this.height)) this.y = this.gameHeight - this.height
+    if (this.checkBorder()) this.y = this.gameHeight - this.height
   }
 
-  private checkBorder(position: number, gameSize: number, playerSize: number): boolean {
+  public checkBorder(position: number = this.y, gameSize: number = this.gameHeight, playerSize: number = this.height): boolean {
     return position >= gameSize - playerSize
+  }
+
+  public setState(state: PLAYER_STATE) {
+    this.playerState = this.states[state]
+    this.playerState.enter()
   }
 
   protected draw(ctx: CanvasRenderingContext2D) {
     this.frameX = this.currentFrame * this.width
-    this.frameY = playerSpriteAnimation[this.playerState].loc[this.currentFrame].y
+    this.frameY_ = playerSpriteAnimation[this.playerState.state].loc[this.currentFrame].y
     ctx.drawImage(
       PLAYER_IMG,
       this.frameX,
-      this.frameY,
+      this.frameY_,
       SPRITE_WIDTH,
       SPRITE_HEIGHT,
       this.x,
@@ -136,14 +157,18 @@ export class Player extends GameEntity {
     this.x = 0
     this.y = this.gameHeight - SPRITE_HEIGHT
     this.frameX = 0
-    this.frameY = 0
+    this.frameY_ = 0
     this.speed = 0
     this.velocityY = 0
     this.isPlayerLost_ = false
-    this.playerState = PLAYER_STATE.RUN
+    this.setState(PLAYER_STATE.RUN)
   }
 
   get isPlayerLost() {
     return this.isPlayerLost_
+  }
+
+  set frameY(value: number) {
+    this.frameY_ = value
   }
 }

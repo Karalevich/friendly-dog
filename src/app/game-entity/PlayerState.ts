@@ -1,4 +1,5 @@
-import { InputHandler } from './InputHandler'
+import { INPUT_KEYS, InputHandler } from './InputHandler'
+import { Player, PLAYER_SPEED } from './Player'
 
 export enum PLAYER_STATE {
   IDLE = 'IDLE',
@@ -14,7 +15,7 @@ export enum PLAYER_STATE {
 }
 
 export type StateType = {
-  name: string
+  name: PLAYER_STATE
   frames: number
 }
 export const PLAYER_MOVEMENT_INFORMATION: Array<StateType> = [
@@ -61,14 +62,95 @@ export const PLAYER_MOVEMENT_INFORMATION: Array<StateType> = [
   }
 ]
 
-abstract class State {
+export abstract class State {
   state: PLAYER_STATE
 
   protected constructor(state: PLAYER_STATE) {
     this.state = state
   }
 
-  protected abstract super(): void
+  public abstract enter(): void
 
-  protected abstract handleInput(input: InputHandler): void
+  public abstract handleInput(input: InputHandler): void
 }
+
+export class Sit extends State {
+  private readonly player: Player
+
+  constructor(player: Player) {
+    super(PLAYER_STATE.SIT)
+    this.player = player
+  }
+
+  public enter() {
+    this.player.frameY = 5
+  }
+
+  public handleInput(input: InputHandler) {
+    if (input.keys.has(INPUT_KEYS.LEFT) || input.keys.has(INPUT_KEYS.RIGHT)) {
+      this.player.setState(PLAYER_STATE.RUN)
+    }
+  }
+}
+
+
+export class Run extends State {
+  private readonly player: Player
+
+  constructor(player: Player) {
+    super(PLAYER_STATE.RUN)
+    this.player = player
+  }
+
+  public enter() {
+    this.player.frameY = 3
+  }
+
+  public handleInput(input: InputHandler) {
+    if (input.keys.has(INPUT_KEYS.DOWN)) {
+      this.player.setState(PLAYER_STATE.SIT)
+    } else if (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP)) {
+      this.player.setState(PLAYER_STATE.JUMP)
+    }
+  }
+}
+
+export class Jump extends State {
+  private readonly player: Player
+
+  constructor(player: Player) {
+    super(PLAYER_STATE.JUMP)
+    this.player = player
+  }
+
+  public enter() {
+    if (this.player.checkBorder()) this.player.velocityY -= PLAYER_SPEED.UP
+    this.player.frameY = 1
+  }
+
+  public handleInput(input: InputHandler) {
+    if (this.player.velocityY > this.player.weight) {
+      this.player.setState(PLAYER_STATE.FALL)
+    }
+  }
+}
+
+export class Fall extends State {
+  private readonly player: Player
+
+  constructor(player: Player) {
+    super(PLAYER_STATE.FALL)
+    this.player = player
+  }
+
+  public enter() {
+    this.player.frameY = 2
+  }
+
+  public handleInput(input: InputHandler) {
+    if (this.player.checkBorder()) {
+      this.player.setState(PLAYER_STATE.RUN)
+    }
+  }
+}
+
