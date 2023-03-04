@@ -1,5 +1,6 @@
 import { INPUT_KEYS, InputHandler } from './InputHandler'
 import { Player, PLAYER_SPEED } from './Player'
+import { CANVAS_WIDTH } from '../constants/canvas-const'
 
 export enum PLAYER_STATE {
   IDLE = 'IDLE',
@@ -63,31 +64,48 @@ export const PLAYER_MOVEMENT_INFORMATION: Array<StateType> = [
 ]
 
 export abstract class State {
-  state: PLAYER_STATE
+  protected state: PLAYER_STATE
+  protected player: Player
+  row: number
+  countFrames: number
 
-  protected constructor(state: PLAYER_STATE) {
+  protected constructor(state: PLAYER_STATE, player: Player, row: number, countFrames: number) {
+    this.player = player
     this.state = state
+    this.row = row
+    this.countFrames = countFrames
   }
 
   public abstract enter(): void
 
   public abstract handleInput(input: InputHandler): void
+
+  protected horizontalMove(input: InputHandler): void {
+    if (input.keys.has(INPUT_KEYS.RIGHT)) {
+      this.player.speed = PLAYER_SPEED.RIGHT
+    } else if (input.keys.has(INPUT_KEYS.LEFT)) {
+      this.player.speed = PLAYER_SPEED.LEFT
+    } else if (!input.keys.has(INPUT_KEYS.RIGHT) && !input.keys.has(INPUT_KEYS.LEFT)) {
+      this.player.speed = 0
+    }
+
+    this.player.x += this.player.speed
+    if (this.player.x < 0) this.player.x = 0
+    else if (this.player.checkBorder(this.player.x, CANVAS_WIDTH, this.player.width)) this.player.x = CANVAS_WIDTH - this.player.width
+  }
 }
 
 export class Sit extends State {
-  private readonly player: Player
-
   constructor(player: Player) {
-    super(PLAYER_STATE.SIT)
-    this.player = player
+    super(PLAYER_STATE.SIT, player, 5, 4)
   }
 
-  public enter() {
-    this.player.frameY = 5
+  public enter(): void {
+    this.player.frameY = this.row
   }
 
-  public handleInput(input: InputHandler) {
-    if (input.keys.has(INPUT_KEYS.LEFT) || input.keys.has(INPUT_KEYS.RIGHT)) {
+  public handleInput(input: InputHandler): void {
+    if (input.keys.has(INPUT_KEYS.LEFT) || input.keys.has(INPUT_KEYS.RIGHT) || input.keys.has(INPUT_KEYS.UP)) {
       this.player.setState(PLAYER_STATE.RUN)
     }
   }
@@ -95,18 +113,17 @@ export class Sit extends State {
 
 
 export class Run extends State {
-  private readonly player: Player
-
   constructor(player: Player) {
-    super(PLAYER_STATE.RUN)
+    super(PLAYER_STATE.RUN, player, 3, 8)
     this.player = player
   }
 
-  public enter() {
-    this.player.frameY = 3
+  public enter(): void {
+    this.player.frameY = this.row
   }
 
-  public handleInput(input: InputHandler) {
+  public handleInput(input: InputHandler): void {
+    this.horizontalMove(input)
     if (input.keys.has(INPUT_KEYS.DOWN)) {
       this.player.setState(PLAYER_STATE.SIT)
     } else if (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP)) {
@@ -116,19 +133,18 @@ export class Run extends State {
 }
 
 export class Jump extends State {
-  private readonly player: Player
-
   constructor(player: Player) {
-    super(PLAYER_STATE.JUMP)
+    super(PLAYER_STATE.JUMP, player, 1, 6)
     this.player = player
   }
 
-  public enter() {
+  public enter(): void {
     if (this.player.checkBorder()) this.player.velocityY -= PLAYER_SPEED.UP
-    this.player.frameY = 1
+    this.player.frameY = this.row
   }
 
-  public handleInput(input: InputHandler) {
+  public handleInput(input: InputHandler): void {
+    this.horizontalMove(input)
     if (this.player.velocityY > this.player.weight) {
       this.player.setState(PLAYER_STATE.FALL)
     }
@@ -136,18 +152,17 @@ export class Jump extends State {
 }
 
 export class Fall extends State {
-  private readonly player: Player
-
   constructor(player: Player) {
-    super(PLAYER_STATE.FALL)
+    super(PLAYER_STATE.FALL, player, 2, 6)
     this.player = player
   }
 
-  public enter() {
-    this.player.frameY = 2
+  public enter(): void {
+    this.player.frameY = this.row
   }
 
-  public handleInput(input: InputHandler) {
+  public handleInput(input: InputHandler): void {
+    this.horizontalMove(input)
     if (this.player.checkBorder()) {
       this.player.setState(PLAYER_STATE.RUN)
     }
