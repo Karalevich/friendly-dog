@@ -8,7 +8,7 @@ import { GameEntity } from './game-entity/GameEntity'
 import { InputHandler } from './game-entity/InputHandler'
 import { Player } from './game-entity/Player'
 import Layer from './game-entity/Layer'
-import { BCG_LAYER_SINGLE } from './constants/bcg-const'
+import { BCG_LAYER_SINGLE, CHARACTER_OFFSET } from './constants/bcg-const'
 
 let gameFrame: number = 0
 let timeToNextEnemy = 0
@@ -19,7 +19,7 @@ let explosions: Array<Explosion> = []
 
 const canvasPosition = canvas.getBoundingClientRect()
 const input = new InputHandler()
-const player = new Player(CANVAS_WIDTH, CANVAS_HEIGHT)
+const player = new Player(CANVAS_WIDTH, CANVAS_HEIGHT - CHARACTER_OFFSET)
 const bcgSingle = new Layer(BCG_LAYER_SINGLE, 1, START_GAME_SPEED)
 
 window.addEventListener('load', () => {
@@ -30,7 +30,7 @@ window.addEventListener('load', () => {
     timeToNextEnemy += deltaTime
     if (timeToNextEnemy > NEW_ENEMY_APPEAR_INTERVAL) {
       // gameObjects.push(new BuzzSawEnemy())
-      // gameObjects.push(new BatEnemy())
+      enemies.push(new BatEnemy())
       // gameObjects.push(new AngryBatEnemy())
       // gameObjects.push(new GhostEnemy())
       enemies.push(new JellyEnemy())
@@ -43,7 +43,7 @@ window.addEventListener('load', () => {
     bcgSingle.update(START_GAME_SPEED, ctx)
     player.update({ deltaTime, ctx, input, enemies })
 
-    enemies.forEach((enemy) => enemy.update({ deltaTime, ctx, gameFrame }))
+    enemies.forEach((enemy) => enemy.update({ deltaTime, ctx, gameFrame, input }))
     enemies = enemies.filter((enemy) => {
       if (enemy.isReadyDelete && enemy.constructor.name.includes('Enemy')) score++
       return !enemy.isReadyDelete

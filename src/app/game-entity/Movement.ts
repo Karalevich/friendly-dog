@@ -73,7 +73,7 @@ export class SineWaveTypeMovement implements MovementInterface {
     this.speed = Math.random() * 2 + 1
     this.angle = Number((Math.random() * 2).toFixed(2))
     this.length = Number((Math.random() * 0.2).toFixed(3))
-    this.amplitude = Number((Math.random() * 7).toFixed(2))
+    this.amplitude = Number((Math.random() * 5).toFixed(2))
   }
 
   public move({ x, y, width }: MoveArgumentsType): { x: number; y: number } {

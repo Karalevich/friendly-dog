@@ -18,3 +18,6 @@ BCG_LAYER5.src = layer5
 
 export const BCG_LAYER_SINGLE = new Image()
 BCG_LAYER_SINGLE.src = single
+
+
+export const CHARACTER_OFFSET = 40

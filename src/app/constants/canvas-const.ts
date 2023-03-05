@@ -4,4 +4,4 @@ export const START_GAME_SPEED = 2
 export const canvas = document.getElementById('canvas1') as HTMLCanvasElement
 export const context = canvas?.getContext('2d') as CanvasRenderingContext2D
 export const CANVAS_WIDTH = (canvas.width = 800)
-export const CANVAS_HEIGHT = (canvas.height = 720)
+export const CANVAS_HEIGHT = (canvas.height = 700)

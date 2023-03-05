@@ -13,7 +13,7 @@ export default class Layer {
     this.x = 0
     this.y = 0
     this.width = 2400
-    this.height = CANVAS_HEIGHT
+    this.height = 720
     this.image = image
     this.speedModifier = speedModifier
     this.speed = gameSpeed * this.speedModifier

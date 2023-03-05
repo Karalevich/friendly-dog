@@ -85,6 +85,10 @@ export class Player extends GameEntity {
     if (input) {
       this.playerState.handleInput(input)
       this.playerMovement(input)
+
+      if (input.debug) {
+        this.drawBorder(ctx)
+      }
     }
     this.draw(ctx)
   }
@@ -129,6 +133,13 @@ export class Player extends GameEntity {
       SPRITE_WIDTH,
       SPRITE_HEIGHT
     )
+  }
+
+  protected drawBorder(ctx: CanvasRenderingContext2D) {
+    ctx.beginPath()
+    ctx.strokeStyle = 'white'
+    ctx.arc(this.x + this.width / 2, this.y + this.height / 2 + 20, this.width / 3, 0, 2 * Math.PI)
+    ctx.stroke()
   }
 
   public restart() {

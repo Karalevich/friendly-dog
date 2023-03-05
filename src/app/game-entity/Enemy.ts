@@ -32,6 +32,7 @@ import {
   HorizontalMovement,
 } from './Movement'
 import { GameEntity, UpdateType } from './GameEntity'
+import { CHARACTER_OFFSET } from '../constants/bcg-const'
 
 export abstract class Enemy extends GameEntity {
   private readonly movementStrategy: MovementInterface
@@ -58,7 +59,7 @@ export abstract class Enemy extends GameEntity {
   }
 
   update(argObj: UpdateType) {
-    const { deltaTime, ctx, gameFrame } = argObj
+    const { deltaTime, ctx, gameFrame, input } = argObj
     const arg = {
       x: this.x,
       y: this.y,
@@ -74,11 +75,21 @@ export abstract class Enemy extends GameEntity {
     if (this.x + this.width < 0) {
       this.isReadyDelete = true
     }
+    if(input?.debug){
+      this.drawBorder(ctx)
+    }
     this.draw(ctx)
   }
 
   draw(ctx: CanvasRenderingContext2D) {
     this.drawImg(ctx, this.x, this.y)
+  }
+
+   protected drawBorder(ctx: CanvasRenderingContext2D) {
+    ctx.beginPath()
+    ctx.strokeStyle = 'white'
+    ctx.arc(this.x + this.width / 2 - 20, this.y + this.height / 2, this.width / 3, 0, 2 * Math.PI)
+    ctx.stroke()
   }
 }
 
@@ -90,7 +101,8 @@ export class BatEnemy extends Enemy {
       COUNT_ENEMY1_FRAMES,
       ENEMY1_SPRITE_WIDTH,
       ENEMY1_SPRITE_HEIGHT,
-      SIZE_RATIO
+      SIZE_RATIO,
+      Math.round(Math.random() * (CANVAS_HEIGHT / 2 - ENEMY1_SPRITE_HEIGHT))
     )
   }
 }
@@ -143,7 +155,7 @@ export class JellyEnemy extends Enemy {
       ENEMY5_SPRITE_WIDTH,
       ENEMY5_SPRITE_HEIGHT,
       JELLY_SIZE_RATIO,
-      CANVAS_HEIGHT - ENEMY5_SPRITE_HEIGHT * JELLY_SIZE_RATIO
+      CANVAS_HEIGHT - ENEMY5_SPRITE_HEIGHT * JELLY_SIZE_RATIO - CHARACTER_OFFSET
     )
   }
 }

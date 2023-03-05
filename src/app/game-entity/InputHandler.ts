@@ -14,18 +14,19 @@ export class InputHandler {
   readonly supportingInputs: Set<INPUT_KEYS>
   private touchY: number
   private readonly touchThreshold: number
+  private debug_: boolean
 
   constructor() {
     this.keys = new Set<INPUT_KEYS>()
     this.touchY = 0
     this.touchThreshold = 30
+    this.debug_ = false
     this.supportingInputs = new Set<INPUT_KEYS>([INPUT_KEYS.DOWN, INPUT_KEYS.UP, INPUT_KEYS.LEFT, INPUT_KEYS.RIGHT, INPUT_KEYS.CONTROL, INPUT_KEYS.COMMAND])
 
     window.addEventListener('keydown', (e) => {
-      console.log(e.key)
       if (this.supportingInputs.has(e.key as INPUT_KEYS)) {
         this.keys.add(e.key as INPUT_KEYS)
-      }
+      }else if(e.key === 'd') this.debug_ = !this.debug_
     })
     window.addEventListener('keyup', (e) => {
       if (this.supportingInputs.has(e.key as INPUT_KEYS)) {
@@ -47,5 +48,9 @@ export class InputHandler {
       this.keys.delete(INPUT_KEYS.SWIPE_UP)
       this.keys.delete(INPUT_KEYS.SWIPE_DOWN)
     })
+  }
+
+  get debug() {
+    return this.debug_
   }
 }
