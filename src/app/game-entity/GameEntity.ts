@@ -4,9 +4,9 @@ import { Enemy } from './Enemy'
 export type UpdateType = {
   deltaTime: number
   ctx: CanvasRenderingContext2D
-  gameFrame?: number
-  input?: InputHandler
-  enemies?: Array<Enemy>
+  gameFrame: number
+  input: InputHandler
+  enemies: Array<Enemy>
 }
 
 export abstract class GameEntity {

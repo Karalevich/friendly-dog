@@ -1,4 +1,6 @@
-import { CANVAS_HEIGHT } from '../constants/canvas-const'
+import { CANVAS_HEIGHT, ROLL_GAME_SPEED, START_GAME_SPEED, STOP_GAME_SPEED } from '../constants/canvas-const'
+import { Player } from './Player'
+import { PLAYER_STATE } from './PlayerState'
 
 export default class Layer {
   private x: number
@@ -19,8 +21,8 @@ export default class Layer {
     this.speed = gameSpeed * this.speedModifier
   }
 
-  public update(gameSpeed: number, ctx: CanvasRenderingContext2D) {
-    this.speed = gameSpeed * this.speedModifier
+  public update(player: Player, ctx: CanvasRenderingContext2D) {
+    this.speed = this.getBcgSpeed(player) * this.speedModifier
     if (this.x <= -this.width) {
       this.x = 0
     }
@@ -35,5 +37,15 @@ export default class Layer {
 
   public restart = () => {
     this.x = 0
+  }
+
+  private getBcgSpeed(player: Player) {
+    if (player.playerState.state === PLAYER_STATE.SIT) {
+      return STOP_GAME_SPEED
+    } else if (player.playerState.state === PLAYER_STATE.ROLL) {
+      return ROLL_GAME_SPEED
+    } else {
+      return START_GAME_SPEED
+    }
   }
 }

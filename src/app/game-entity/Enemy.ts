@@ -21,7 +21,7 @@ import {
   ENEMY_IMG4,
   ENEMY_IMG5,
   JELLY_SIZE_RATIO,
-  SIZE_RATIO,
+  SIZE_RATIO
 } from '../constants/enemy-const'
 import {
   ShakeTypeMovement,
@@ -29,7 +29,7 @@ import {
   SineWaveTypeMovement,
   SnakeTypeMovement,
   RandomJumpMovement,
-  HorizontalMovement,
+  HorizontalMovement
 } from './Movement'
 import { GameEntity, UpdateType } from './GameEntity'
 import { CHARACTER_OFFSET } from '../constants/bcg-const'
@@ -58,14 +58,14 @@ export abstract class Enemy extends GameEntity {
     this.movementStrategy = movement
   }
 
-  update(argObj: UpdateType) {
+  public update(argObj: UpdateType): void {
     const { deltaTime, ctx, gameFrame, input } = argObj
     const arg = {
       x: this.x,
       y: this.y,
       gameFrame: gameFrame || 0,
       width: this.width,
-      height: this.height,
+      height: this.height
     }
     const { x, y } = this.movementStrategy.move(arg)
     this.x = x
@@ -75,17 +75,17 @@ export abstract class Enemy extends GameEntity {
     if (this.x + this.width < 0) {
       this.isReadyDelete = true
     }
-    if(input?.debug){
+    if (input?.debug) {
       this.drawBorder(ctx)
     }
     this.draw(ctx)
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  protected draw(ctx: CanvasRenderingContext2D): void {
     this.drawImg(ctx, this.x, this.y)
   }
 
-   protected drawBorder(ctx: CanvasRenderingContext2D) {
+  protected drawBorder(ctx: CanvasRenderingContext2D): void {
     ctx.beginPath()
     ctx.strokeStyle = 'white'
     ctx.arc(this.x + this.width / 2 - 20, this.y + this.height / 2, this.width / 3, 0, 2 * Math.PI)

@@ -40,15 +40,16 @@ window.addEventListener('load', () => {
     // bcgParallax.forEach((bcg) => {
     //   bcg.update(START_GAME_SPEED, ctx)
     // })
-    bcgSingle.update(START_GAME_SPEED, ctx)
-    player.update({ deltaTime, ctx, input, enemies })
+    bcgSingle.update(player, ctx)
+    const updateArgs = { deltaTime, ctx, input, enemies, gameFrame }
+    player.update(updateArgs)
 
-    enemies.forEach((enemy) => enemy.update({ deltaTime, ctx, gameFrame, input }))
+    enemies.forEach((enemy) => enemy.update(updateArgs))
     enemies = enemies.filter((enemy) => {
       if (enemy.isReadyDelete && enemy.constructor.name.includes('Enemy')) score++
       return !enemy.isReadyDelete
     })
-    explosions.forEach((explosion) => explosion.update({ deltaTime, ctx, gameFrame }))
+    explosions.forEach((explosion) => explosion.update(updateArgs))
     explosions = explosions.filter((explosion) => {
       if (explosion.isReadyDelete && explosion.constructor.name.includes('Enemy')) score++
       return !explosion.isReadyDelete

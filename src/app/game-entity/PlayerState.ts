@@ -64,14 +64,14 @@ export const PLAYER_MOVEMENT_INFORMATION: Array<StateType> = [
 ]
 
 export abstract class State {
-  protected state: PLAYER_STATE
+  protected state_: PLAYER_STATE
   protected player: Player
   row: number
   countFrames: number
 
   protected constructor(state: PLAYER_STATE, player: Player, row: number, countFrames: number) {
     this.player = player
-    this.state = state
+    this.state_ = state
     this.row = row
     this.countFrames = countFrames
   }
@@ -93,6 +93,10 @@ export abstract class State {
     if (this.player.x < 0) this.player.x = 0
     else if (this.player.checkBorder(this.player.x, CANVAS_WIDTH, this.player.width)) this.player.x = CANVAS_WIDTH - this.player.width
   }
+
+  public get state() {
+    return this.state_
+  }
 }
 
 export class Sit extends State {
@@ -107,6 +111,8 @@ export class Sit extends State {
   public handleInput(input: InputHandler): void {
     if (input.keys.has(INPUT_KEYS.LEFT) || input.keys.has(INPUT_KEYS.RIGHT) || input.keys.has(INPUT_KEYS.UP)) {
       this.player.setState(PLAYER_STATE.RUN)
+    } else if (input.keys.has(INPUT_KEYS.COMMAND) || input.keys.has(INPUT_KEYS.CONTROL)) {
+      this.player.setState(PLAYER_STATE.ROLL)
     }
   }
 }
@@ -128,6 +134,8 @@ export class Run extends State {
       this.player.setState(PLAYER_STATE.SIT)
     } else if (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP)) {
       this.player.setState(PLAYER_STATE.JUMP)
+    } else if (input.keys.has(INPUT_KEYS.COMMAND) || input.keys.has(INPUT_KEYS.CONTROL)) {
+      this.player.setState(PLAYER_STATE.ROLL)
     }
   }
 }
@@ -147,6 +155,8 @@ export class Jump extends State {
     this.horizontalMove(input)
     if (this.player.velocityY > this.player.weight) {
       this.player.setState(PLAYER_STATE.FALL)
+    } else if (input.keys.has(INPUT_KEYS.COMMAND) || input.keys.has(INPUT_KEYS.CONTROL)) {
+      this.player.setState(PLAYER_STATE.ROLL)
     }
   }
 }
@@ -165,7 +175,34 @@ export class Fall extends State {
     this.horizontalMove(input)
     if (this.player.checkBorder()) {
       this.player.setState(PLAYER_STATE.RUN)
+    } else if (input.keys.has(INPUT_KEYS.COMMAND) || input.keys.has(INPUT_KEYS.CONTROL)) {
+      this.player.setState(PLAYER_STATE.ROLL)
     }
+  }
+}
+
+export class Roll extends State {
+  constructor(player: Player) {
+    super(PLAYER_STATE.ROLL, player, 6, 6)
+    this.player = player
+  }
+
+  public enter(): void {
+    this.player.frameY = this.row
+  }
+
+  public handleInput(input: InputHandler): void {
+    if (!this.isContrPressed(input) && this.player.checkBorder()) {
+      this.player.setState(PLAYER_STATE.RUN)
+    } else if (!this.isContrPressed(input) && !this.player.checkBorder()) {
+      this.player.setState(PLAYER_STATE.FALL)
+    } else if (this.isContrPressed(input) && this.player.checkBorder() && (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP))){
+      this.player.velocityY -= PLAYER_SPEED.UP
+    }
+  }
+
+  private isContrPressed(input: InputHandler) {
+    return input.keys.has(INPUT_KEYS.CONTROL) || input.keys.has(INPUT_KEYS.COMMAND)
   }
 }
 
