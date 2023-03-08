@@ -1,8 +1,9 @@
 import { GameEntity, UpdateType } from './GameEntity'
-import { INPUT_KEYS, InputHandler } from './InputHandler'
 import player from '../../img/player.png'
 import { Fall, Jump, PLAYER_STATE, Roll, Run, Sit, State } from './PlayerState'
 import { Enemy } from './Enemy'
+import { Dust, Particle } from './Particle'
+import { getBcgSpeed } from '../utils/bcg-utils'
 
 export enum PLAYER_SPEED {
   UP = 23,
@@ -73,12 +74,13 @@ export class Player extends GameEntity {
   }
 
   update(argObj: UpdateType) {
-    const { deltaTime, ctx, input, enemies } = argObj
+    const { deltaTime, ctx, input, enemies, particles } = argObj
 
     this.checkCollision(enemies)
     this.frequencyCount(deltaTime)
     this.playerState_.handleInput(input)
-    this.playerMovement(input)
+    this.playerMovement()
+    this.addDust(particles)
 
     if (input.debug) {
       this.drawBorder(ctx)
@@ -87,7 +89,7 @@ export class Player extends GameEntity {
     this.draw(ctx)
   }
 
-  private playerMovement(input: InputHandler) {
+  private playerMovement(): void {
     // vertical movement
     this.y += this.velocityY
 
@@ -138,6 +140,12 @@ export class Player extends GameEntity {
       SPRITE_WIDTH,
       SPRITE_HEIGHT
     )
+  }
+
+  protected addDust(particles: Array<Particle>) {
+    if (this.playerState.state === PLAYER_STATE.RUN) {
+      particles.push(new Dust(this.x + this.spriteWidth / 2, this.y + this.spriteHeight, getBcgSpeed(this.playerState.state)))
+    }
   }
 
   protected drawBorder(ctx: CanvasRenderingContext2D) {

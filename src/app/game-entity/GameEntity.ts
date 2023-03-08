@@ -1,5 +1,6 @@
 import { InputHandler } from './InputHandler'
 import { Enemy } from './Enemy'
+import { Particle } from './Particle'
 
 export type UpdateType = {
   deltaTime: number
@@ -7,6 +8,7 @@ export type UpdateType = {
   gameFrame: number
   input: InputHandler
   enemies: Array<Enemy>
+  particles: Array<Particle>
 }
 
 export abstract class GameEntity {
@@ -16,7 +18,7 @@ export abstract class GameEntity {
   protected currentFrame: number
   private width_: number
   private height_: number
-  private readonly spriteWidth: number
+  protected readonly spriteWidth: number
   protected readonly spriteHeight: number
   protected countImageFrames: number
   private timeSinceLastChangeFrame: number

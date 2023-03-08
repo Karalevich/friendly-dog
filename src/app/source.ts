@@ -9,6 +9,7 @@ import { InputHandler } from './game-entity/InputHandler'
 import { Player } from './game-entity/Player'
 import Layer from './game-entity/Layer'
 import { BCG_LAYER_SINGLE, CHARACTER_OFFSET } from './constants/bcg-const'
+import { Particle } from './game-entity/Particle'
 
 let gameFrame: number = 0
 let timeToNextEnemy = 0
@@ -16,6 +17,7 @@ let score = 0
 let lastTime = 0
 let enemies: Array<Enemy> = []
 let explosions: Array<Explosion> = []
+let particles: Array<Particle> = []
 
 const canvasPosition = canvas.getBoundingClientRect()
 const input = new InputHandler()
@@ -41,7 +43,7 @@ window.addEventListener('load', () => {
     //   bcg.update(START_GAME_SPEED, ctx)
     // })
     bcgSingle.update(player, ctx)
-    const updateArgs = { deltaTime, ctx, input, enemies, gameFrame }
+    const updateArgs = { deltaTime, ctx, input, enemies, gameFrame, particles }
     player.update(updateArgs)
 
     enemies.forEach((enemy) => enemy.update(updateArgs))
@@ -53,6 +55,10 @@ window.addEventListener('load', () => {
     explosions = explosions.filter((explosion) => {
       if (explosion.isReadyDelete && explosion.constructor.name.includes('Enemy')) score++
       return !explosion.isReadyDelete
+    })
+    particles.forEach(particle => particle.update(ctx))
+    particles = particles.filter((particle) => {
+      return !particle.isReadyDelete
     })
     gameFrame++
 
