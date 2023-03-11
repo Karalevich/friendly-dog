@@ -192,6 +192,7 @@ export class Roll extends State {
   }
 
   public handleInput(input: InputHandler): void {
+    this.horizontalMove(input)
     if (!this.isContrPressed(input) && this.player.checkBorder()) {
       this.player.setState(PLAYER_STATE.RUN)
     } else if (!this.isContrPressed(input) && !this.player.checkBorder()) {

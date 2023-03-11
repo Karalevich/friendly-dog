@@ -59,7 +59,9 @@ export class Splash extends Particle {
 }
 
 export class Fire extends Particle {
-  private image: HTMLImageElement
+  private readonly image: HTMLImageElement
+  private angle: number
+  va: number
 
   constructor(x: number, y: number, gameSpeed: number) {
     super(x, y, gameSpeed)
@@ -67,15 +69,23 @@ export class Fire extends Particle {
     this.size = Number((Math.random() * 100 + 50).toFixed(2))
     this.speedX = 1
     this.speedY = 1
+    this.angle = 0
+    this.va = Math.random() * 0.2 - 0.1
   }
 
   update(ctx: CanvasRenderingContext2D) {
     super.update(ctx)
     this.draw(ctx)
+    this.angle += this.va
+    this.x += Math.sin(this.angle * 10)
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.drawImage(this.image, this.x, this.y, this.size, this.size)
+    ctx.save()
+    ctx.translate(this.x, this.y)
+    ctx.rotate(this.angle)
+    ctx.drawImage(this.image, -this.size * 0.5, -this.size * 0.5, this.size, this.size)
+    ctx.restore()
   }
 }
 

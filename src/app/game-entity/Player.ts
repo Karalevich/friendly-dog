@@ -2,7 +2,7 @@ import { GameEntity, UpdateType } from './GameEntity'
 import player from '../../img/player.png'
 import { Fall, Jump, PLAYER_STATE, Roll, Run, Sit, State } from './PlayerState'
 import { Enemy } from './Enemy'
-import { Dust, Particle } from './Particle'
+import { Dust, Fire, Particle } from './Particle'
 import { getBcgSpeed } from '../utils/bcg-utils'
 
 export enum PLAYER_SPEED {
@@ -69,8 +69,8 @@ export class Player extends GameEntity {
     }
     this.playerState_ = this.states[PLAYER_STATE.SIT]
     this.isPlayerLost_ = false
-    this.playerState_.enter()
-    this.countImageFrames = this.playerState_.countFrames
+    this.playerState.enter()
+    this.countImageFrames = this.playerState.countFrames
   }
 
   update(argObj: UpdateType) {
@@ -78,9 +78,10 @@ export class Player extends GameEntity {
 
     this.checkCollision(enemies)
     this.frequencyCount(deltaTime)
-    this.playerState_.handleInput(input)
+    this.playerState.handleInput(input)
     this.playerMovement()
     this.addDust(particles)
+    this.addFire(particles)
 
     if (input.debug) {
       this.drawBorder(ctx)
@@ -94,13 +95,13 @@ export class Player extends GameEntity {
     this.y += this.velocityY
 
     if (!this.checkBorder()) {
-      const jumpCountFrames = this.playerState_.countFrames
+      const jumpCountFrames = this.playerState.countFrames
       this.velocityY += this.gravity
-      this.countImageFrames = this.playerState_.countFrames
+      this.countImageFrames = this.playerState.countFrames
       this.currentFrame = this.currentFrame > jumpCountFrames ? 0 : this.currentFrame
     } else {
       this.velocityY = 0
-      this.countImageFrames = this.playerState_.countFrames
+      this.countImageFrames = this.playerState.countFrames
     }
 
     if (this.checkBorder()) this.y = this.gameHeight - this.height
@@ -112,7 +113,11 @@ export class Player extends GameEntity {
       const dy = enemy.y + enemy.height / 2 - (this.y + this.height / 2 + 20)
       const distance = Math.sqrt(dx * dx + dy * dy)
       if (distance < enemy.width / 3 + this.width / 3) {
-        this.isPlayerLost_ = true
+        if(this.playerState.state === PLAYER_STATE.ROLL){
+          enemy.isReadyDelete = true
+        }else{
+          this.isPlayerLost_ = true
+        }
       }
     })
   }
@@ -123,12 +128,12 @@ export class Player extends GameEntity {
 
   public setState(state: PLAYER_STATE) {
     this.playerState_ = this.states[state]
-    this.playerState_.enter()
+    this.playerState.enter()
   }
 
   protected draw(ctx: CanvasRenderingContext2D) {
     this.frameX = this.currentFrame * this.width
-    this.frameY_ = SPRITE_HEIGHT * this.playerState_.row
+    this.frameY_ = SPRITE_HEIGHT * this.playerState.row
     ctx.drawImage(
       PLAYER_IMG,
       this.frameX,
@@ -144,7 +149,13 @@ export class Player extends GameEntity {
 
   protected addDust(particles: Array<Particle>) {
     if (this.playerState.state === PLAYER_STATE.RUN) {
-      particles.push(new Dust(this.x + this.spriteWidth / 2, this.y + this.spriteHeight, getBcgSpeed(this.playerState.state)))
+      particles.push(new Dust(this.x + this.spriteWidth * 0.5, this.y + this.spriteHeight, getBcgSpeed(this.playerState.state)))
+    }
+  }
+
+   protected addFire(particles: Array<Particle>) {
+    if (this.playerState.state === PLAYER_STATE.ROLL) {
+      particles.push(new Fire(this.x + this.spriteWidth * 0.5, this.y + this.spriteHeight * 0.5, getBcgSpeed(this.playerState.state)))
     }
   }
 

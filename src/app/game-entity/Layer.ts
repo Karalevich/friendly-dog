@@ -1,6 +1,4 @@
-import { CANVAS_HEIGHT, ROLL_GAME_SPEED, START_GAME_SPEED, STOP_GAME_SPEED } from '../constants/canvas-const'
 import { Player } from './Player'
-import { PLAYER_STATE } from './PlayerState'
 import { getBcgSpeed } from '../utils/bcg-utils'
 
 export default class Layer {
