@@ -1,13 +1,13 @@
 import { GameEntity, UpdateType } from './GameEntity'
 import player from '../../img/player.png'
-import { Fall, Jump, PLAYER_STATE, Roll, Run, Sit, State } from './PlayerState'
+import { Dive, Fall, Jump, PLAYER_STATE, Roll, Run, Sit, State } from './PlayerState'
 import { Enemy } from './Enemy'
 import { Dust, Fire, Particle } from './Particle'
 import { getBcgSpeed } from '../utils/bcg-utils'
 
 export enum PLAYER_SPEED {
   UP = 23,
-  DOWN = 5,
+  DOWN = 20,
   LEFT = -5,
   RIGHT = 5,
 }
@@ -62,6 +62,7 @@ export class Player extends GameEntity {
       [PLAYER_STATE.FALL]: new Fall(this),
       [PLAYER_STATE.DIZZY]: new Sit(this),
       [PLAYER_STATE.ROLL]: new Roll(this),
+      [PLAYER_STATE.DIVE]: new Dive(this),
       [PLAYER_STATE.BITE]: new Sit(this),
       [PLAYER_STATE.KO]: new Sit(this),
       [PLAYER_STATE.GET_HIT]: new Sit(this),
@@ -113,7 +114,7 @@ export class Player extends GameEntity {
       const dy = enemy.y + enemy.height / 2 - (this.y + this.height / 2 + 20)
       const distance = Math.sqrt(dx * dx + dy * dy)
       if (distance < enemy.width / 3 + this.width / 3) {
-        if(this.playerState.state === PLAYER_STATE.ROLL){
+        if(this.playerState.state === PLAYER_STATE.ROLL || this.playerState.state === PLAYER_STATE.DIVE){
           enemy.isReadyDelete = true
         }else{
           this.isPlayerLost_ = true

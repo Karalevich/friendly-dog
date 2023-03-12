@@ -10,6 +10,7 @@ export enum PLAYER_STATE {
   DIZZY = 'DIZZY',
   SIT = 'SIT',
   ROLL = 'ROLL',
+  DIVE = 'DIVE',
   BITE = 'BITE',
   KO = 'KO',
   GET_HIT = 'GET_HIT',
@@ -157,6 +158,8 @@ export class Jump extends State {
       this.player.setState(PLAYER_STATE.FALL)
     } else if (input.keys.has(INPUT_KEYS.COMMAND) || input.keys.has(INPUT_KEYS.CONTROL)) {
       this.player.setState(PLAYER_STATE.ROLL)
+    } else if(input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN)){
+      this.player.setState(PLAYER_STATE.DIVE)
     }
   }
 }
@@ -177,6 +180,8 @@ export class Fall extends State {
       this.player.setState(PLAYER_STATE.RUN)
     } else if (input.keys.has(INPUT_KEYS.COMMAND) || input.keys.has(INPUT_KEYS.CONTROL)) {
       this.player.setState(PLAYER_STATE.ROLL)
+    }else if(input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN)){
+      this.player.setState(PLAYER_STATE.DIVE)
     }
   }
 }
@@ -199,6 +204,33 @@ export class Roll extends State {
       this.player.setState(PLAYER_STATE.FALL)
     } else if (this.isContrPressed(input) && this.player.checkBorder() && (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP))){
       this.player.velocityY -= PLAYER_SPEED.UP
+    }else if(!this.player.checkBorder() && (input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN))){
+      this.player.setState(PLAYER_STATE.DIVE)
+    }
+  }
+
+  private isContrPressed(input: InputHandler) {
+    return input.keys.has(INPUT_KEYS.CONTROL) || input.keys.has(INPUT_KEYS.COMMAND)
+  }
+}
+
+export class Dive extends State {
+  constructor(player: Player) {
+    super(PLAYER_STATE.DIVE, player, 6, 6)
+    this.player = player
+  }
+
+  public enter(): void {
+    this.player.velocityY = PLAYER_SPEED.DOWN
+    this.player.frameY = this.row
+  }
+
+  public handleInput(input: InputHandler): void {
+    this.horizontalMove(input)
+    if (this.player.checkBorder()) {
+      this.player.setState(PLAYER_STATE.RUN)
+    } else if (this.isContrPressed(input) && this.player.checkBorder()) {
+      this.player.setState(PLAYER_STATE.ROLL)
     }
   }
 
