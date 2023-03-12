@@ -2,7 +2,7 @@ import { GameEntity, UpdateType } from './GameEntity'
 import player from '../../img/player.png'
 import { Dive, Fall, Jump, PLAYER_STATE, Roll, Run, Sit, State } from './PlayerState'
 import { Enemy } from './Enemy'
-import { Dust, Fire, Particle } from './Particle'
+import { Dust, Fire, Particle, Splash } from './Particle'
 import { getBcgSpeed } from '../utils/bcg-utils'
 
 export enum PLAYER_SPEED {
@@ -83,6 +83,7 @@ export class Player extends GameEntity {
     this.playerMovement()
     this.addDust(particles)
     this.addFire(particles)
+    this.addSplash(particles)
 
     if (input.debug) {
       this.drawBorder(ctx)
@@ -157,6 +158,14 @@ export class Player extends GameEntity {
    protected addFire(particles: Array<Particle>) {
     if (this.playerState.state === PLAYER_STATE.ROLL) {
       particles.push(new Fire(this.x + this.spriteWidth * 0.5, this.y + this.spriteHeight * 0.5, getBcgSpeed(this.playerState.state)))
+    }
+  }
+
+  protected addSplash(particles: Array<Particle>) {
+    if (this.playerState.state === PLAYER_STATE.DIVE && this.checkBorder()) {
+      for(let i = 0; i < 30; i++){
+        particles.push(new Splash(this.x , this.y + this.spriteHeight * 0.4, getBcgSpeed(this.playerState.state)))
+      }
     }
   }
 

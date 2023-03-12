@@ -55,7 +55,29 @@ export class Dust extends Particle {
 }
 
 export class Splash extends Particle {
+  private readonly color: string
+  private readonly image: HTMLImageElement
+  private gravity: number
 
+  constructor(x: number, y: number, gameSpeed: number) {
+    super(x, y, gameSpeed)
+    this.size = Number((Math.random() * 50 + 50).toFixed(2))
+    this.speedX = Number((Math.random() * 14 - 7).toFixed(2))
+    this.speedY = Number((Math.random() * 7 + 2).toFixed(2))
+    this.gravity = 0
+    this.image = FIRE_IMG
+    this.color = 'rgba(0,0,0,0.2)'
+  }
+
+  public update(ctx: CanvasRenderingContext2D) {
+    super.update(ctx)
+    this.draw(ctx)
+    this.gravity += 0.15
+  }
+
+  private draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(this.image, this.x, this.y, this.size, this.size)
+  }
 }
 
 export class Fire extends Particle {
