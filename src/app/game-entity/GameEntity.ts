@@ -1,6 +1,7 @@
 import { InputHandler } from './InputHandler'
 import { Enemy } from './Enemy'
 import { Particle } from './Particle'
+import Explosion from './Explosion'
 
 export type UpdateType = {
   deltaTime: number
@@ -9,6 +10,7 @@ export type UpdateType = {
   input: InputHandler
   enemies: Array<Enemy>
   particles: Array<Particle>
+  explosions: Array<Explosion>
 }
 
 export abstract class GameEntity {

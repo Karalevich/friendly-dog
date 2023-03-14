@@ -17,7 +17,9 @@ export const getBcgSpeed = (state: PLAYER_STATE) => {
       return STOP_GAME_SPEED
     } else if (state === PLAYER_STATE.ROLL) {
       return ROLL_GAME_SPEED
-    } else {
+    } else if (state === PLAYER_STATE.DIZZY) {
+      return STOP_GAME_SPEED
+    }else {
       return START_GAME_SPEED
     }
   }

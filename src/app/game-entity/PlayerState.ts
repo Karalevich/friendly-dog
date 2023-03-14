@@ -131,7 +131,7 @@ export class Run extends State {
 
   public handleInput(input: InputHandler): void {
     this.horizontalMove(input)
-    if (input.keys.has(INPUT_KEYS.DOWN)) {
+    if (input.keys.has(INPUT_KEYS.DOWN) && !input.keys.has(INPUT_KEYS.LEFT) && !input.keys.has(INPUT_KEYS.RIGHT) ) {
       this.player.setState(PLAYER_STATE.SIT)
     } else if (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP)) {
       this.player.setState(PLAYER_STATE.JUMP)
@@ -236,6 +236,34 @@ export class Dive extends State {
 
   private isContrPressed(input: InputHandler) {
     return input.keys.has(INPUT_KEYS.CONTROL) || input.keys.has(INPUT_KEYS.COMMAND)
+  }
+}
+
+
+export class Dizzy extends State {
+  private readonly timeDizzyState: number
+  private counter: number
+  constructor(player: Player) {
+    super(PLAYER_STATE.DIZZY, player, 4, 10)
+    this.player = player
+    this.timeDizzyState = 90
+    this.counter = 0
+  }
+
+  public enter(): void {
+    this.player.velocityY = PLAYER_SPEED.DOWN
+    this.player.frameY = this.row
+  }
+
+  public handleInput(input: InputHandler): void {
+    this.counter += 1
+    if (this.counter >= this.timeDizzyState && this.player.checkBorder()) {
+      this.counter = 0
+      this.player.setState(PLAYER_STATE.RUN)
+    } else if (this.counter >= this.timeDizzyState  && !this.player.checkBorder()) {
+      this.counter = 0
+      this.player.setState(PLAYER_STATE.FALL)
+    }
   }
 }
 

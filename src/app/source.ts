@@ -4,7 +4,7 @@ import { bcgParallax } from './utils/bcg-utils'
 import Explosion from './game-entity/Explosion'
 import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, Enemy, GhostEnemy, JellyEnemy } from './game-entity/Enemy'
 import { NEW_ENEMY_APPEAR_INTERVAL } from './constants/enemy-const'
-import { GameEntity } from './game-entity/GameEntity'
+import { GameEntity, UpdateType } from './game-entity/GameEntity'
 import { InputHandler } from './game-entity/InputHandler'
 import { Player } from './game-entity/Player'
 import Layer from './game-entity/Layer'
@@ -19,7 +19,6 @@ let enemies: Array<Enemy> = []
 let explosions: Array<Explosion> = []
 let particles: Array<Particle> = []
 
-const canvasPosition = canvas.getBoundingClientRect()
 const input = new InputHandler()
 const player = new Player(CANVAS_WIDTH, CANVAS_HEIGHT - CHARACTER_OFFSET)
 const bcgSingle = new Layer(BCG_LAYER_SINGLE, 1, START_GAME_SPEED)
@@ -43,7 +42,7 @@ window.addEventListener('load', () => {
     //   bcg.update(START_GAME_SPEED, ctx)
     // })
     bcgSingle.update(player, ctx)
-    const updateArgs = { deltaTime, ctx, input, enemies, gameFrame, particles }
+    const updateArgs: UpdateType = { deltaTime, ctx, input, enemies, gameFrame, particles, explosions }
     player.update(updateArgs)
 
     enemies.forEach((enemy) => enemy.update(updateArgs))
@@ -70,12 +69,6 @@ window.addEventListener('load', () => {
     }
   }
   animate(lastTime)
-
-  window.addEventListener('click', (e) => {
-    let positionX = e.x - canvasPosition.left
-    let positionY = e.y - canvasPosition.top
-    explosions.push(new Explosion(positionX, positionY))
-  })
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && player.isPlayerLost) {

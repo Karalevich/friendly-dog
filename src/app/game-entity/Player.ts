@@ -1,9 +1,10 @@
 import { GameEntity, UpdateType } from './GameEntity'
 import player from '../../img/player.png'
-import { Dive, Fall, Jump, PLAYER_STATE, Roll, Run, Sit, State } from './PlayerState'
+import { Dive, Dizzy, Fall, Jump, PLAYER_STATE, Roll, Run, Sit, State } from './PlayerState'
 import { Enemy } from './Enemy'
 import { Dust, Fire, Particle, Splash } from './Particle'
 import { getBcgSpeed } from '../utils/bcg-utils'
+import Explosion from './Explosion'
 
 export enum PLAYER_SPEED {
   UP = 23,
@@ -60,7 +61,7 @@ export class Player extends GameEntity {
       [PLAYER_STATE.RUN]: new Run(this),
       [PLAYER_STATE.JUMP]: new Jump(this),
       [PLAYER_STATE.FALL]: new Fall(this),
-      [PLAYER_STATE.DIZZY]: new Sit(this),
+      [PLAYER_STATE.DIZZY]: new Dizzy(this),
       [PLAYER_STATE.ROLL]: new Roll(this),
       [PLAYER_STATE.DIVE]: new Dive(this),
       [PLAYER_STATE.BITE]: new Sit(this),
@@ -75,9 +76,9 @@ export class Player extends GameEntity {
   }
 
   update(argObj: UpdateType) {
-    const { deltaTime, ctx, input, enemies, particles } = argObj
+    const { deltaTime, ctx, input, enemies, particles, explosions } = argObj
 
-    this.checkCollision(enemies)
+    this.checkCollision(enemies, explosions)
     this.frequencyCount(deltaTime)
     this.playerState.handleInput(input)
     this.playerMovement()
@@ -109,17 +110,21 @@ export class Player extends GameEntity {
     if (this.checkBorder()) this.y = this.gameHeight - this.height
   }
 
-  protected checkCollision(enemies: Array<Enemy>) {
+  protected checkCollision(enemies: Array<Enemy>, explosions: Array<Explosion>) {
     enemies.forEach((enemy) => {
       const dx = enemy.x + enemy.width / 2 - 20 - (this.x + this.width / 2)
       const dy = enemy.y + enemy.height / 2 - (this.y + this.height / 2 + 20)
       const distance = Math.sqrt(dx * dx + dy * dy)
       if (distance < enemy.width / 3 + this.width / 3) {
-        if(this.playerState.state === PLAYER_STATE.ROLL || this.playerState.state === PLAYER_STATE.DIVE){
-          enemy.isReadyDelete = true
-        }else{
-          this.isPlayerLost_ = true
+        if (this.playerState.state !== PLAYER_STATE.ROLL && this.playerState.state !== PLAYER_STATE.DIVE) {
+          this.setState(PLAYER_STATE.DIZZY)
         }
+
+        if (this.playerState.state === PLAYER_STATE.ROLL) {
+          explosions.push(new Explosion(this.x + this.spriteWidth * 0.5, this.y + this.spriteHeight * 0.5))
+        }
+
+        enemy.isReadyDelete = true
       }
     })
   }
@@ -155,7 +160,7 @@ export class Player extends GameEntity {
     }
   }
 
-   protected addFire(particles: Array<Particle>) {
+  protected addFire(particles: Array<Particle>) {
     if (this.playerState.state === PLAYER_STATE.ROLL) {
       particles.push(new Fire(this.x + this.spriteWidth * 0.5, this.y + this.spriteHeight * 0.5, getBcgSpeed(this.playerState.state)))
     }
@@ -163,8 +168,8 @@ export class Player extends GameEntity {
 
   protected addSplash(particles: Array<Particle>) {
     if (this.playerState.state === PLAYER_STATE.DIVE && this.checkBorder()) {
-      for(let i = 0; i < 30; i++){
-        particles.push(new Splash(this.x , this.y + this.spriteHeight * 0.4, getBcgSpeed(this.playerState.state)))
+      for (let i = 0; i < 30; i++) {
+        particles.push(new Splash(this.x, this.y + this.spriteHeight * 0.4, getBcgSpeed(this.playerState.state)))
       }
     }
   }
