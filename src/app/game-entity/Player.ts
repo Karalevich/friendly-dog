@@ -5,6 +5,7 @@ import { Enemy } from './Enemy'
 import { Dust, Fire, Particle, Splash } from './Particle'
 import { getBcgSpeed } from '../utils/bcg-utils'
 import Explosion from './Explosion'
+import { FloatingMessage } from './FloatingMessage'
 
 export enum PLAYER_SPEED {
   UP = 23,
@@ -32,6 +33,7 @@ export class Player extends GameEntity {
   velocityY: number
   weight: number
   private readonly gravity: number
+  lives: number
   private playerState_: State
   private isPlayerLost_: boolean
   private readonly states: {
@@ -56,6 +58,7 @@ export class Player extends GameEntity {
     this.velocityY = 0
     this.gravity = 0.6
     this.weight = 1
+    this.lives = 5
     this.states = {
       [PLAYER_STATE.SIT]: new Sit(this),
       [PLAYER_STATE.RUN]: new Run(this),
@@ -76,9 +79,9 @@ export class Player extends GameEntity {
   }
 
   update(argObj: UpdateType) {
-    const { deltaTime, ctx, input, enemies, particles, explosions } = argObj
+    const { deltaTime, ctx, input, enemies, particles, explosions, floats } = argObj
 
-    this.checkCollision(enemies, explosions)
+    this.checkCollision(enemies, explosions, floats)
     this.frequencyCount(deltaTime)
     this.playerState.handleInput(input)
     this.playerMovement()
@@ -110,7 +113,7 @@ export class Player extends GameEntity {
     if (this.checkBorder()) this.y = this.gameHeight - this.height
   }
 
-  protected checkCollision(enemies: Array<Enemy>, explosions: Array<Explosion>) {
+  protected checkCollision(enemies: Array<Enemy>, explosions: Array<Explosion>, floats: Array<FloatingMessage>) {
     enemies.forEach((enemy) => {
       const dx = enemy.x + enemy.width / 2 - 20 - (this.x + this.width / 2)
       const dy = enemy.y + enemy.height / 2 - (this.y + this.height / 2 + 20)
@@ -118,10 +121,22 @@ export class Player extends GameEntity {
       if (distance < enemy.width / 3 + this.width / 3) {
         if (this.playerState.state !== PLAYER_STATE.ROLL && this.playerState.state !== PLAYER_STATE.DIVE) {
           this.setState(PLAYER_STATE.DIZZY)
+          this.lives -= 1
         }
 
         if (this.playerState.state === PLAYER_STATE.ROLL) {
           explosions.push(new Explosion(this.x + this.spriteWidth * 0.5, this.y + this.spriteHeight * 0.5))
+        }
+
+        if(this.playerState.state === PLAYER_STATE.ROLL || this.playerState.state === PLAYER_STATE.DIVE){
+          floats.push(new FloatingMessage('+1', enemy.x, enemy.y, 150, 100))
+          enemy.isKilled = true
+        }
+
+        if (this.lives === 0) {
+          setTimeout(() => {
+            this.isPlayerLost_ = true
+          }, 1000)
         }
 
         enemy.isReadyDelete = true
@@ -184,6 +199,7 @@ export class Player extends GameEntity {
   public restart() {
     this.x = 0
     this.y = this.gameHeight - SPRITE_HEIGHT
+    this.lives = 5
     this.frameX = 0
     this.frameY_ = 0
     this.speed = 0

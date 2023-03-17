@@ -36,6 +36,7 @@ import { CHARACTER_OFFSET } from '../constants/bcg-const'
 
 export abstract class Enemy extends GameEntity {
   private readonly movementStrategy: MovementInterface
+  isKilled: boolean
 
   protected constructor(
     movement: MovementInterface,
@@ -56,6 +57,7 @@ export abstract class Enemy extends GameEntity {
       sizeRatio
     )
     this.movementStrategy = movement
+    this.isKilled = false
   }
 
   public update(argObj: UpdateType): void {

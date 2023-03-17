@@ -1,4 +1,4 @@
-import { canvas, CANVAS_HEIGHT, CANVAS_WIDTH, START_GAME_SPEED } from './constants/canvas-const'
+import { CANVAS_HEIGHT, CANVAS_WIDTH, START_GAME_SPEED } from './constants/canvas-const'
 import { context as ctx } from './constants/canvas-const'
 import { bcgParallax } from './utils/bcg-utils'
 import Explosion from './game-entity/Explosion'
@@ -8,8 +8,9 @@ import { GameEntity, UpdateType } from './game-entity/GameEntity'
 import { InputHandler } from './game-entity/InputHandler'
 import { Player } from './game-entity/Player'
 import Layer from './game-entity/Layer'
-import { BCG_LAYER_SINGLE, CHARACTER_OFFSET } from './constants/bcg-const'
+import { BCG_LAYER_SINGLE, CHARACTER_OFFSET, LIVES } from './constants/bcg-const'
 import { Particle } from './game-entity/Particle'
+import { FloatingMessage } from './game-entity/FloatingMessage'
 
 let gameFrame: number = 0
 let timeToNextEnemy = 0
@@ -18,10 +19,11 @@ let lastTime = 0
 let enemies: Array<Enemy> = []
 let explosions: Array<Explosion> = []
 let particles: Array<Particle> = []
+let floats: Array<FloatingMessage> = []
 
 const input = new InputHandler()
 const player = new Player(CANVAS_WIDTH, CANVAS_HEIGHT - CHARACTER_OFFSET)
-const bcgSingle = new Layer(BCG_LAYER_SINGLE, 1, START_GAME_SPEED)
+let bcgSingle = new Layer(BCG_LAYER_SINGLE, 1, START_GAME_SPEED)
 
 window.addEventListener('load', () => {
   const animate = (timestamp: number): void => {
@@ -42,22 +44,25 @@ window.addEventListener('load', () => {
     //   bcg.update(START_GAME_SPEED, ctx)
     // })
     bcgSingle.update(player, ctx)
-    const updateArgs: UpdateType = { deltaTime, ctx, input, enemies, gameFrame, particles, explosions }
+    const updateArgs: UpdateType = { deltaTime, ctx, input, enemies, gameFrame, particles, explosions, floats }
     player.update(updateArgs)
 
     enemies.forEach((enemy) => enemy.update(updateArgs))
     enemies = enemies.filter((enemy) => {
-      if (enemy.isReadyDelete && enemy.constructor.name.includes('Enemy')) score++
+      if(enemy.isKilled) score++
       return !enemy.isReadyDelete
     })
     explosions.forEach((explosion) => explosion.update(updateArgs))
     explosions = explosions.filter((explosion) => {
-      if (explosion.isReadyDelete && explosion.constructor.name.includes('Enemy')) score++
       return !explosion.isReadyDelete
     })
     particles.forEach(particle => particle.update(ctx))
     particles = particles.filter((particle) => {
       return !particle.isReadyDelete
+    })
+    floats.forEach(particle => particle.update(ctx))
+    floats = floats.filter((float) => {
+      return !float.isReadyDelete
     })
     gameFrame++
 
@@ -67,6 +72,7 @@ window.addEventListener('load', () => {
       displayStatusText(ctx)
       requestAnimationFrame(animate)
     }
+    playerLives(ctx, player.lives)
   }
   animate(lastTime)
 
@@ -89,10 +95,15 @@ const displayStatusText = (context: CanvasRenderingContext2D) => {
 const gameOverStatus = (context: CanvasRenderingContext2D) => {
   context.font = '40px Helvetica'
   context.fillStyle = 'black'
-  context.textAlign = 'center'
-  context.fillText('Game Over! Your Score: ' + score, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
+  context.fillText('Game Over! Your Score: ' + score, 150, CANVAS_HEIGHT / 2)
   context.fillStyle = 'white'
-  context.fillText('Game Over! Your Score: ' + score, CANVAS_WIDTH / 1.98, CANVAS_HEIGHT / 1.98)
+  context.fillText('Game Over! Your Score: ' + score, 152, CANVAS_HEIGHT / 1.98)
+}
+
+const playerLives = (context: CanvasRenderingContext2D, count: number) => {
+  for(let i = 0; i < count; i++){
+    context.drawImage(LIVES, 20+ i * 30, 60, 25, 25)
+  }
 }
 
 const restartGame = () => {
@@ -104,4 +115,8 @@ const restartGame = () => {
   lastTime = 0
   enemies = []
   explosions = []
+  particles = []
+  floats = []
+
+
 }

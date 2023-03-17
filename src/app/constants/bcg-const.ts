@@ -4,6 +4,7 @@ import layer3 from '../../img/layer-3.png'
 import layer4 from '../../img/layer-4.png'
 import layer5 from '../../img/layer-5.png'
 import single from '../../img/background_single.png'
+import lives from  '../../img/lives.png'
 
 export const BCG_LAYER1 = new Image()
 BCG_LAYER1.src = layer1
@@ -18,6 +19,9 @@ BCG_LAYER5.src = layer5
 
 export const BCG_LAYER_SINGLE = new Image()
 BCG_LAYER_SINGLE.src = single
+
+export const LIVES = new Image()
+LIVES.src = lives
 
 
 export const CHARACTER_OFFSET = 40
