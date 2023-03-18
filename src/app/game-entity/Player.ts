@@ -1,11 +1,11 @@
 import { GameEntity, UpdateType } from './GameEntity'
-import player from '../../img/player.png'
 import { Dive, Dizzy, Fall, Jump, PLAYER_STATE, Roll, Run, Sit, State } from './PlayerState'
 import { Enemy } from './Enemy'
 import { Dust, Fire, Particle, Splash } from './Particle'
 import { getBcgSpeed } from '../utils/bcg-utils'
 import Explosion from './Explosion'
 import { FloatingMessage } from './FloatingMessage'
+import { PLAYER_IMG, SPRITE_HEIGHT, SPRITE_WIDTH } from '../constants/player-const'
 
 export enum PLAYER_SPEED {
   UP = 23,
@@ -13,16 +13,6 @@ export enum PLAYER_SPEED {
   LEFT = -5,
   RIGHT = 5,
 }
-
-export const PLAYER_IMG = new Image()
-PLAYER_IMG.src = player
-export const PLAYER_IMAGE_WIDTH = PLAYER_IMG.naturalWidth
-export const PLAYER_IMAGE_HEIGHT = PLAYER_IMG.naturalHeight
-export const PLAYER_IMAGE_COLUMNS = 12
-export const PLAYER_IMAGE_ROWS = 10
-export const SPRITE_WIDTH = Number((PLAYER_IMAGE_WIDTH / PLAYER_IMAGE_COLUMNS).toFixed(2))
-export const SPRITE_HEIGHT = Number((PLAYER_IMAGE_HEIGHT / PLAYER_IMAGE_ROWS).toFixed(2))
-
 
 export class Player extends GameEntity {
   private readonly gameWidth: number
@@ -157,7 +147,7 @@ export class Player extends GameEntity {
     this.frameX = this.currentFrame * this.width
     this.frameY_ = SPRITE_HEIGHT * this.playerState.row
     ctx.drawImage(
-      PLAYER_IMG,
+      this.img,
       this.frameX,
       this.frameY_,
       SPRITE_WIDTH,

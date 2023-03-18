@@ -4,13 +4,14 @@ import { bcgParallax } from './utils/bcg-utils'
 import Explosion from './game-entity/Explosion'
 import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, Enemy, GhostEnemy, JellyEnemy } from './game-entity/Enemy'
 import { NEW_ENEMY_APPEAR_INTERVAL } from './constants/enemy-const'
-import { GameEntity, UpdateType } from './game-entity/GameEntity'
+import { UpdateType } from './game-entity/GameEntity'
 import { InputHandler } from './game-entity/InputHandler'
 import { Player } from './game-entity/Player'
 import Layer from './game-entity/Layer'
 import { BCG_LAYER_SINGLE, CHARACTER_OFFSET, LIVES } from './constants/bcg-const'
 import { Particle } from './game-entity/Particle'
 import { FloatingMessage } from './game-entity/FloatingMessage'
+import explosion from '../audio/explosion.wav'
 
 let gameFrame: number = 0
 let timeToNextEnemy = 0
@@ -22,11 +23,14 @@ let particles: Array<Particle> = []
 let floats: Array<FloatingMessage> = []
 
 const input = new InputHandler()
+const bcgSingle = new Layer(BCG_LAYER_SINGLE, 1, START_GAME_SPEED)
 const player = new Player(CANVAS_WIDTH, CANVAS_HEIGHT - CHARACTER_OFFSET)
-let bcgSingle = new Layer(BCG_LAYER_SINGLE, 1, START_GAME_SPEED)
+let animate: (lastTime: number) => void
 
 window.addEventListener('load', () => {
-  const animate = (timestamp: number): void => {
+  bcgSingle.update(player, ctx)
+  startMessage()
+  animate = (timestamp: number): void => {
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
     let deltaTime = timestamp - lastTime
     lastTime = timestamp
@@ -49,7 +53,7 @@ window.addEventListener('load', () => {
 
     enemies.forEach((enemy) => enemy.update(updateArgs))
     enemies = enemies.filter((enemy) => {
-      if(enemy.isKilled) score++
+      if (enemy.isKilled) score++
       return !enemy.isReadyDelete
     })
     explosions.forEach((explosion) => explosion.update(updateArgs))
@@ -74,7 +78,6 @@ window.addEventListener('load', () => {
     }
     playerLives(ctx, player.lives)
   }
-  animate(lastTime)
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && player.isPlayerLost) {
@@ -101,9 +104,25 @@ const gameOverStatus = (context: CanvasRenderingContext2D) => {
 }
 
 const playerLives = (context: CanvasRenderingContext2D, count: number) => {
-  for(let i = 0; i < count; i++){
-    context.drawImage(LIVES, 20+ i * 30, 60, 25, 25)
+  for (let i = 0; i < count; i++) {
+    context.drawImage(LIVES, 20 + i * 30, 60, 25, 25)
   }
+}
+
+const startMessage = () => {
+  const modal = document.getElementById('modal')
+  const button = document.getElementById('modal-button')
+  if (modal?.style) {
+    modal.style.display = 'block'
+  }
+
+  button?.addEventListener('click', () => {
+    animate(lastTime)
+    if (modal?.style) {
+      modal.style.display = 'none'
+    }
+  })
+
 }
 
 const restartGame = () => {
@@ -117,6 +136,4 @@ const restartGame = () => {
   explosions = []
   particles = []
   floats = []
-
-
 }

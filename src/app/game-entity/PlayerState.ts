@@ -1,6 +1,7 @@
 import { INPUT_KEYS, InputHandler } from './InputHandler'
 import { Player, PLAYER_SPEED } from './Player'
 import { CANVAS_WIDTH } from '../constants/canvas-const'
+import fire from '../../audio/fire.wav'
 
 export enum PLAYER_STATE {
   IDLE = 'IDLE',
@@ -20,49 +21,6 @@ export type StateType = {
   name: PLAYER_STATE
   frames: number
 }
-export const PLAYER_MOVEMENT_INFORMATION: Array<StateType> = [
-  {
-    name: PLAYER_STATE.IDLE,
-    frames: 7
-  },
-  {
-    name: PLAYER_STATE.JUMP,
-    frames: 7
-  },
-  {
-    name: PLAYER_STATE.FALL,
-    frames: 7
-  },
-  {
-    name: PLAYER_STATE.RUN,
-    frames: 9
-  },
-
-  {
-    name: PLAYER_STATE.DIZZY,
-    frames: 11
-  },
-  {
-    name: PLAYER_STATE.SIT,
-    frames: 5
-  },
-  {
-    name: PLAYER_STATE.ROLL,
-    frames: 7
-  },
-  {
-    name: PLAYER_STATE.BITE,
-    frames: 7
-  },
-  {
-    name: PLAYER_STATE.KO,
-    frames: 12
-  },
-  {
-    name: PLAYER_STATE.GET_HIT,
-    frames: 4
-  }
-]
 
 export abstract class State {
   protected state_: PLAYER_STATE
@@ -187,25 +145,33 @@ export class Fall extends State {
 }
 
 export class Roll extends State {
+   private readonly sound: HTMLAudioElement
   constructor(player: Player) {
     super(PLAYER_STATE.ROLL, player, 6, 6)
     this.player = player
+    this.sound = new Audio()
+    this.sound.src = fire
   }
 
   public enter(): void {
     this.player.frameY = this.row
+
   }
 
   public handleInput(input: InputHandler): void {
     this.horizontalMove(input)
+    this.sound.play()
     if (!this.isContrPressed(input) && this.player.checkBorder()) {
+      this.sound.pause()
       this.player.setState(PLAYER_STATE.RUN)
     } else if (!this.isContrPressed(input) && !this.player.checkBorder()) {
       this.player.setState(PLAYER_STATE.FALL)
+      this.sound.pause()
     } else if (this.isContrPressed(input) && this.player.checkBorder() && (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP))){
       this.player.velocityY -= PLAYER_SPEED.UP
     }else if(!this.player.checkBorder() && (input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN))){
       this.player.setState(PLAYER_STATE.DIVE)
+      this.sound.pause()
     }
   }
 

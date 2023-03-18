@@ -28,7 +28,7 @@ export abstract class GameEntity {
   private timeSinceLastChangeFrame: number
   private readonly framesChangingFrequency: number
   protected readonly sizeRatio: number
-  private readonly img: HTMLImageElement
+  protected readonly img: HTMLImageElement
 
   protected constructor(
     x: number,

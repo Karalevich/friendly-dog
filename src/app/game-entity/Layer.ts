@@ -1,5 +1,6 @@
 import { Player } from './Player'
 import { getBcgSpeed } from '../utils/bcg-utils'
+import forest from '../../audio/forest.wav'
 
 export default class Layer {
   private x: number
@@ -9,6 +10,8 @@ export default class Layer {
   private readonly image: HTMLImageElement
   private readonly speedModifier: number
   private speed: number
+  private isStart: boolean
+  private readonly sound: HTMLAudioElement
 
   constructor(image: HTMLImageElement, speedModifier: number, gameSpeed: number) {
     this.x = 0
@@ -18,10 +21,14 @@ export default class Layer {
     this.image = image
     this.speedModifier = speedModifier
     this.speed = gameSpeed * this.speedModifier
+    this.sound = new Audio()
+    this.sound.src = forest
+    this.isStart = true
   }
 
   public update(player: Player, ctx: CanvasRenderingContext2D) {
     this.speed = getBcgSpeed(player.playerState.state) * this.speedModifier
+    if(this.isStart) this.sound.play()
     if (this.x <= -this.width) {
       this.x = 0
     }
