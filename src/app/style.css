@@ -23,9 +23,9 @@ body {
   font-size: 30px;
   display: none;
   position: absolute;
-  width: 500px;
+  width: 600px;
   top: 50%;
-  left: calc(50% - 250px);
+  left: calc(50% - 300px);
   transform: translateY(-50%);
   background-color: gainsboro;
   color: black;

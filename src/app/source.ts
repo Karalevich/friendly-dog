@@ -1,6 +1,6 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH, START_GAME_SPEED } from './constants/canvas-const'
 import { context as ctx } from './constants/canvas-const'
-import { bcgParallax } from './utils/bcg-utils'
+import modalInfo from '../img/modal-info.png'
 import Explosion from './game-entity/Explosion'
 import { AngryBatEnemy, BatEnemy, BuzzSawEnemy, Enemy, GhostEnemy, JellyEnemy } from './game-entity/Enemy'
 import { NEW_ENEMY_APPEAR_INTERVAL } from './constants/enemy-const'
@@ -11,7 +11,6 @@ import Layer from './game-entity/Layer'
 import { BCG_LAYER_SINGLE, CHARACTER_OFFSET, LIVES } from './constants/bcg-const'
 import { Particle } from './game-entity/Particle'
 import { FloatingMessage } from './game-entity/FloatingMessage'
-import explosion from '../audio/explosion.wav'
 
 let gameFrame: number = 0
 let timeToNextEnemy = 0
@@ -112,9 +111,17 @@ const playerLives = (context: CanvasRenderingContext2D, count: number) => {
 const startMessage = () => {
   const modal = document.getElementById('modal')
   const button = document.getElementById('modal-button')
+  const main = document.getElementById('modal-main')
+  const img = document.createElement('img')
+  img.src = modalInfo
+  img.style.width = '560px'
+  main?.appendChild(img)
+
   if (modal?.style) {
     modal.style.display = 'block'
+    modal.style.backgroundImage = 'url(img/modal-info.png)'
   }
+
 
   button?.addEventListener('click', () => {
     animate(lastTime)

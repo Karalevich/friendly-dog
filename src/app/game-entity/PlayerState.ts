@@ -1,7 +1,9 @@
 import { INPUT_KEYS, InputHandler } from './InputHandler'
 import { Player, PLAYER_SPEED } from './Player'
 import { CANVAS_WIDTH } from '../constants/canvas-const'
-import fire from '../../audio/fire.wav'
+import fire from '../../audio/fire2.wav'
+import hit from '../../audio/hit.wav'
+import scream from '../../audio/scream.wav'
 
 export enum PLAYER_STATE {
   IDLE = 'IDLE',
@@ -89,7 +91,7 @@ export class Run extends State {
 
   public handleInput(input: InputHandler): void {
     this.horizontalMove(input)
-    if (input.keys.has(INPUT_KEYS.DOWN) && !input.keys.has(INPUT_KEYS.LEFT) && !input.keys.has(INPUT_KEYS.RIGHT) ) {
+    if (input.keys.has(INPUT_KEYS.DOWN) && !input.keys.has(INPUT_KEYS.LEFT) && !input.keys.has(INPUT_KEYS.RIGHT)) {
       this.player.setState(PLAYER_STATE.SIT)
     } else if (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP)) {
       this.player.setState(PLAYER_STATE.JUMP)
@@ -116,7 +118,7 @@ export class Jump extends State {
       this.player.setState(PLAYER_STATE.FALL)
     } else if (input.keys.has(INPUT_KEYS.COMMAND) || input.keys.has(INPUT_KEYS.CONTROL)) {
       this.player.setState(PLAYER_STATE.ROLL)
-    } else if(input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN)){
+    } else if (input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN)) {
       this.player.setState(PLAYER_STATE.DIVE)
     }
   }
@@ -138,14 +140,15 @@ export class Fall extends State {
       this.player.setState(PLAYER_STATE.RUN)
     } else if (input.keys.has(INPUT_KEYS.COMMAND) || input.keys.has(INPUT_KEYS.CONTROL)) {
       this.player.setState(PLAYER_STATE.ROLL)
-    }else if(input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN)){
+    } else if (input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN)) {
       this.player.setState(PLAYER_STATE.DIVE)
     }
   }
 }
 
 export class Roll extends State {
-   private readonly sound: HTMLAudioElement
+  private readonly sound: HTMLAudioElement
+
   constructor(player: Player) {
     super(PLAYER_STATE.ROLL, player, 6, 6)
     this.player = player
@@ -167,9 +170,9 @@ export class Roll extends State {
     } else if (!this.isContrPressed(input) && !this.player.checkBorder()) {
       this.player.setState(PLAYER_STATE.FALL)
       this.sound.pause()
-    } else if (this.isContrPressed(input) && this.player.checkBorder() && (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP))){
+    } else if (this.isContrPressed(input) && this.player.checkBorder() && (input.keys.has(INPUT_KEYS.UP) || input.keys.has(INPUT_KEYS.SWIPE_UP))) {
       this.player.velocityY -= PLAYER_SPEED.UP
-    }else if(!this.player.checkBorder() && (input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN))){
+    } else if (!this.player.checkBorder() && (input.keys.has(INPUT_KEYS.DOWN) || input.keys.has(INPUT_KEYS.SWIPE_DOWN))) {
       this.player.setState(PLAYER_STATE.DIVE)
       this.sound.pause()
     }
@@ -181,9 +184,13 @@ export class Roll extends State {
 }
 
 export class Dive extends State {
+  private readonly sound: HTMLAudioElement
+
   constructor(player: Player) {
     super(PLAYER_STATE.DIVE, player, 6, 6)
     this.player = player
+    this.sound = new Audio()
+    this.sound.src = hit
   }
 
   public enter(): void {
@@ -193,6 +200,7 @@ export class Dive extends State {
 
   public handleInput(input: InputHandler): void {
     this.horizontalMove(input)
+    this.sound.play()
     if (this.player.checkBorder()) {
       this.player.setState(PLAYER_STATE.RUN)
     } else if (this.isContrPressed(input) && this.player.checkBorder()) {
@@ -209,11 +217,15 @@ export class Dive extends State {
 export class Dizzy extends State {
   private readonly timeDizzyState: number
   private counter: number
+  private readonly sound: HTMLAudioElement
+
   constructor(player: Player) {
     super(PLAYER_STATE.DIZZY, player, 4, 10)
     this.player = player
     this.timeDizzyState = 90
     this.counter = 0
+    this.sound = new Audio()
+    this.sound.src = scream
   }
 
   public enter(): void {
@@ -223,10 +235,11 @@ export class Dizzy extends State {
 
   public handleInput(input: InputHandler): void {
     this.counter += 1
+    this.sound.play()
     if (this.counter >= this.timeDizzyState && this.player.checkBorder()) {
       this.counter = 0
       this.player.setState(PLAYER_STATE.RUN)
-    } else if (this.counter >= this.timeDizzyState  && !this.player.checkBorder()) {
+    } else if (this.counter >= this.timeDizzyState && !this.player.checkBorder()) {
       this.counter = 0
       this.player.setState(PLAYER_STATE.FALL)
     }
