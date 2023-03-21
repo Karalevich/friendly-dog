@@ -5,6 +5,8 @@ Deploy: https://friendly-dog.netlify.app/
 
 ![Canvas-game](./public/screen.png)
 
+
+#
 ##Description
 
 This is game shows the basics principles drawing animations using images ans Canvas.
