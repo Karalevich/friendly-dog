@@ -7,7 +7,7 @@ Deploy: https://friendly-dog.netlify.app/
 
 
 #
-##Description
+#Description
 
 This is game shows the basics principles drawing animations using images ans Canvas.
 Also it is a great example of using OOP and Design Patterns.
