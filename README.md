@@ -1,6 +1,6 @@
 # Friendly-dog
 
-Deploy: https://spacedventures.netlify.app/
+Deploy: https://friendly-dog.netlify.app/
 
 
 ![Canvas-game](./public/screen.png)
